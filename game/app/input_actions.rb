@@ -1,17 +1,17 @@
 module InputActions
   class << self
     def process_inputs(inputs)
-      [].tap do |actions|
+      {}.tap do |actions|
         keyboard = inputs.keyboard
 
         if inputs.left_right == -1
-          actions << { action: :move, direction: :left }
+          actions[:move] = :left
         elsif inputs.left_right == 1
-          actions << { action: :move, direction: :right }
+          actions[:move] = :right
         end
 
         if keyboard.key_held.space
-          actions << { action: :jump }
+          actions[:jump] = true
         end
       end
     end

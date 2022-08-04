@@ -7,9 +7,7 @@ def test_movement(args, assert)
 
     input_actions = InputActions.process_inputs args.inputs
 
-    assert.equal! input_actions, [
-      { action: :move, direction: direction }
-    ]
+    assert.equal! input_actions, { move: direction }
   end
 end
 
@@ -18,9 +16,7 @@ def test_jump(args, assert)
 
   input_actions = InputActions.process_inputs args.inputs
 
-  assert.equal! input_actions, [
-    { action: :jump }
-  ]
+  assert.equal! input_actions, { jump: true }
 end
 
 def test_movement_and_jump(args, assert)
@@ -33,9 +29,6 @@ def test_movement_and_jump(args, assert)
 
     input_actions = InputActions.process_inputs args.inputs
 
-    assert.equal! input_actions.sort_by(&:action), [
-      { action: :jump },
-      { action: :move, direction: direction }
-    ]
+    assert.equal! input_actions, { move: direction, jump: true }
   end
 end
