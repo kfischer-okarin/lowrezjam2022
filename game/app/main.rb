@@ -4,6 +4,7 @@ require 'lib/extra_keys.rb'
 require 'lib/resources.rb'
 
 require 'app/input_actions.rb'
+require 'app/movement.rb'
 require 'app/player.rb'
 require 'app/resources.rb'
 
@@ -48,6 +49,8 @@ def render(state, outputs)
   screen.width = SCREEN_W
   screen.height = SCREEN_H
 
+  state.rendered_player[:sprite][:x] = state.player[:position][:x]
+  state.rendered_player[:sprite][:y] = state.player[:position][:y]
   state.rendered_player[:next_animation] = :"#{state.player[:state]}_#{state.player[:face_direction]}"
   update_animation(state.rendered_player)
   screen.primitives << state.rendered_player[:sprite]
@@ -72,6 +75,7 @@ end
 
 def update(state)
   Player.update!(state.player, state)
+  Movement.apply!(state.player)
 end
 
 $gtk.reset

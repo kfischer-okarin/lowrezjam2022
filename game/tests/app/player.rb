@@ -81,3 +81,41 @@ def test_player_face_direction(args, assert)
     end
   end
 end
+
+def test_player_movement(args, assert)
+  [
+    { direction: :right, movement: { x: 1, y: 0 } },
+    { direction: :left, movement: { x: -1, y: 0 } },
+  ].each do |test_case|
+    %i[idle run jump].each do |state|
+      player = Player.build
+      player[:state] = state
+      args.state.input_actions = { move: test_case[:direction] }
+
+      Player.update!(player, args.state)
+
+      assert.equal! player[:movement],
+                    test_case[:movement],
+                    "Expected #{args.state.input_actions} to change player with " \
+                    "#{{ state: state }} to have movement #{test_case[:movement]} " \
+                    "but it was #{player[:movement]}"
+    end
+  end
+end
+
+def test_player_movement_stop_moving(args, assert)
+  %i[run jump].each do |state|
+    player = Player.build
+    player[:state] = state
+    player[:movement] = { x: 1, y: 0 }
+    args.state.input_actions = {}
+
+    Player.update!(player, args.state)
+
+    assert.equal! player[:movement],
+                  { x: 0, y: 0 },
+                  "Expected #{args.state.input_actions} to change player with " \
+                  "#{{ state: state, movement: { x: 1, y: 0 } }} to stop moving"
+  end
+end
+

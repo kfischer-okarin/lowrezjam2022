@@ -2,7 +2,8 @@ module Player
   class << self
     def build
       {
-        x: 0, y: 0,
+        position: { x: 0, y: 0 },
+        movement: { x: 0, y: 0 },
         state: :idle,
         face_direction: :right,
       }
@@ -12,6 +13,7 @@ module Player
       input_actions = state.input_actions
       update_state(player, input_actions)
       update_face_direction(player, input_actions)
+      update_movement(player, input_actions)
     end
 
     private
@@ -30,6 +32,14 @@ module Player
     def update_face_direction(player, input_actions)
       if input_actions[:move]
         player[:face_direction] = input_actions[:move]
+      end
+    end
+
+    def update_movement(player, input_actions)
+      if input_actions[:move]
+        player[:movement][:x] = player[:face_direction] == :right ? 1 : -1
+      else
+        player[:movement][:x] = 0
       end
     end
   end
