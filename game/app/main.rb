@@ -4,6 +4,7 @@ require 'lib/extra_keys.rb'
 require 'lib/resources.rb'
 
 require 'app/input_actions.rb'
+require 'app/player.rb'
 require 'app/resources.rb'
 
 SCREEN_W = 64
@@ -13,15 +14,12 @@ def tick(args)
   state = args.state
   setup(state) if args.tick_count.zero?
   render(state, args.outputs)
-  state.input_events = InputActions.process_inputs(args.inputs)
+  state.input_actions = InputActions.process_inputs(args.inputs)
+  update(state)
 end
 
 def setup(state)
-  state.player = {
-    x: 0, y: 0,
-    state: :run,
-    face_direction: :right,
-  }
+  state.player = Player.build
   state.rendered_player = {
     animations: load_player_animations,
     sprite: {}.sprite!,
@@ -70,6 +68,10 @@ def update_animation(render_state)
       animation: render_state[:animations][next_animation]
     )
   end
+end
+
+def update(state)
+  Player.update!(state.player, state)
 end
 
 $gtk.reset
