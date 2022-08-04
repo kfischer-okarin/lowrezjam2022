@@ -23,10 +23,10 @@ def setup(state)
     face_direction: :right,
   }
   state.rendered_player = {
-    entity: state.player,
     animations: load_player_animations,
     sprite: {}.sprite!,
-    animation_type: nil,
+    animation: nil,
+    next_animation: nil,
     animation_state: nil
   }
 end
@@ -50,6 +50,7 @@ def render(state, outputs)
   screen.width = SCREEN_W
   screen.height = SCREEN_H
 
+  state.rendered_player[:next_animation] = :"#{state.player[:state]}_#{state.player[:face_direction]}"
   update_animation(state.rendered_player)
   screen.primitives << state.rendered_player[:sprite]
 
@@ -58,16 +59,15 @@ def render(state, outputs)
 end
 
 def update_animation(render_state)
-  entity = render_state[:entity]
-  animation_type = :"#{entity.state}_#{entity.face_direction}"
-  if render_state[:animation_type] == animation_type
+  next_animation = render_state[:next_animation]
+  if render_state[:animation_type] == next_animation
     Animations.next_tick render_state[:animation_state]
     Animations.apply! render_state[:sprite], animation_state: render_state[:animation_state]
   else
-    render_state[:animation_type] = animation_type
+    render_state[:animation_type] = next_animation
     render_state[:animation_state] = Animations.start!(
       render_state[:sprite],
-      animation: render_state[:animations][animation_type]
+      animation: render_state[:animations][next_animation]
     )
   end
 end
