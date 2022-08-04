@@ -3,6 +3,7 @@ require 'lib/debug_mode.rb'
 require 'lib/extra_keys.rb'
 require 'lib/resources.rb'
 
+require 'app/input_actions.rb'
 require 'app/resources.rb'
 
 SCREEN_W = 64
@@ -12,6 +13,7 @@ def tick(args)
   state = args.state
   setup(state) if args.tick_count.zero?
   render(state, args.outputs)
+  state.input_events = InputActions.process_inputs(args.inputs)
 end
 
 def setup(state)
