@@ -1,4 +1,4 @@
-def test_movement(args, assert)
+def test_input_actions_movement(args, assert)
   inputs = args.inputs
 
   %i[left right].each do |direction|
@@ -11,7 +11,7 @@ def test_movement(args, assert)
   end
 end
 
-def test_jump(args, assert)
+def test_input_actions_jump(args, assert)
   args.inputs.keyboard.key_held.space = 1
 
   input_actions = InputActions.process_inputs args.inputs
@@ -19,7 +19,7 @@ def test_jump(args, assert)
   assert.equal! input_actions, { jump: true }
 end
 
-def test_movement_and_jump(args, assert)
+def test_input_actions_movement_and_jump(args, assert)
   inputs = args.inputs
 
   %i[left right].each do |direction|
