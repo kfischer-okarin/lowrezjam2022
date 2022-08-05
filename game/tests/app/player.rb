@@ -60,6 +60,24 @@ def test_player_start_jumping_when_running(args, assert)
   end
 end
 
+def test_player_stop_jumping(args, assert)
+  PlayerTests.test(args, assert) do
+    with state: :jump, position: { x: 0, y: 5 }
+
+    loop do
+      no_input
+
+      break if player[:state] == :idle
+
+      next unless tick_count > 1000
+
+      raise "Expected #{player_description} to become idle, but he didn't"
+    end
+
+    assert.ok!
+  end
+end
+
 def test_player_face_direction(args, assert)
   %i[left right].each do |initial_face_direction|
     %i[left right].each do |move_direction|

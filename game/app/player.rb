@@ -15,7 +15,8 @@ module Player
       update_state(player, input_actions)
       update_face_direction(player, input_actions)
       update_movement(player, input_actions)
-      Movement.apply!(player)
+      movement_result = Movement.apply!(player)
+      land(player) if movement_result[:stopped_falling]
     end
 
     private
@@ -48,6 +49,12 @@ module Player
       else
         player[:movement][:x] = 0
       end
+    end
+
+    def land(player)
+      return unless player[:state] == :jump
+
+      player[:state] = :idle
     end
   end
 end
