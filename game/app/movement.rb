@@ -4,6 +4,7 @@ module Movement
       apply_gravity(entity)
       move(entity, :x)
       move(entity, :y)
+      stop_falling(entity)
     end
 
     private
@@ -25,6 +26,13 @@ module Movement
       end
 
       entity[:movement][dimension] = abs_movement * sign
+    end
+
+    def stop_falling(entity)
+      return unless entity[:position][:y].negative?
+
+      entity[:position][:y] = 0
+      entity[:y_velocity] = 0
     end
   end
 end

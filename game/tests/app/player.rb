@@ -181,6 +181,28 @@ def test_player_should_eventually_move_down_after_jumping(args, assert)
   assert.ok!
 end
 
+def test_player_should_only_fall_until_the_floor(args, assert)
+  PlayerTests.test(args, assert) do
+    with state: :jump, position: { x: 0, y: 5 }
+
+    loop do
+      y_before_tick = player[:position][:y]
+
+      no_input
+
+      break if player[:position][:y].zero? && y_before_tick == player[:position][:y]
+
+      if tick_count > 1000
+        raise "Expected #{player_description} to reach the ground, but he didn't"
+      elsif player[:position][:y] < 0
+        raise "Expected #{player_description} to reach the ground, but he fell through"
+      end
+    end
+  end
+
+  assert.ok!
+end
+
 module PlayerTests
   class << self
     def test(args, assert, &block)
