@@ -64,14 +64,10 @@ def test_player_stop_jumping(args, assert)
   PlayerTests.test(args, assert) do
     with state: :jump, position: { x: 0, y: 5 }
 
-    loop do
+    safe_loop "Expected #{player_description} to become idle, but he didn't" do
       no_input
 
-      break if player[:state] == :idle
-
-      next unless tick_count > 1000
-
-      raise "Expected #{player_description} to become idle, but he didn't"
+      break if player[:state] != :jump
     end
 
     assert.ok!
@@ -182,16 +178,12 @@ def test_player_should_eventually_move_down_after_jumping(args, assert)
       with state: state
       input jump: true
 
-      loop do
+      safe_loop "Expected #{player_description} to eventually fall down after jumping, but he didn't" do
         y_before_tick = player[:position][:y]
 
         no_input
 
         break if player[:position][:y] < y_before_tick
-
-        next unless tick_count > 1000
-
-        raise "Expected #{player_description} to eventually fall down after jumping, but he didn't"
       end
     end
   end
@@ -205,18 +197,16 @@ def test_player_should_only_fall_until_the_floor(args, assert)
       with state: state
       input jump: true
 
-      loop do
+      safe_loop "Expected #{player_description} to reach the ground, but he didn't" do
         y_before_tick = player[:position][:y]
 
         no_input
 
         break if player[:position][:y].zero? && y_before_tick == player[:position][:y]
 
-        if tick_count > 1000
-          raise "Expected #{player_description} to reach the ground, but he didn't"
-        elsif player[:position][:y] < 0
-          raise "Expected #{player_description} to reach the ground, but he fell through"
-        end
+        next unless player[:position][:y] < 0
+
+        raise "Expected #{player_description} to reach the ground, but he fell through"
       end
     end
   end
@@ -231,14 +221,10 @@ def test_player_should_not_be_able_to_jump_again_without_releasing_the_jump_butt
       input jump: true
       no_input # Releasing jump button mid-air doesn't count as releasing
 
-      loop do
+      safe_loop "Expected #{player_description} to land, but he didn't" do
         input jump: true
 
         break if player[:state] == :idle
-
-        next unless tick_count > 1000
-
-        raise "Expected #{player_description} to land, but he didn't"
       end
 
       input jump: true
@@ -270,16 +256,12 @@ def test_player_should_jump_higher_when_holding_the_jump_button(args, assert)
       with state: state
       input jump: true
 
-      loop do
+      safe_loop "Expected #{player_description} to reach the ground, but he didn't" do
         max_height_without_holding_the_button = [max_height_without_holding_the_button, player[:position][:y]].max
 
         no_input
 
         break if player[:state] == :idle
-
-        next unless tick_count > 1000
-
-        raise "Expected #{player_description} to reach the ground, but he didn't"
       end
     end
 
@@ -287,16 +269,12 @@ def test_player_should_jump_higher_when_holding_the_jump_button(args, assert)
       with state: state
       input jump: true
 
-      loop do
+      safe_loop "Expected #{player_description} to reach the ground, but he didn't" do
         max_height_with_holding_the_button = [max_height_with_holding_the_button, player[:position][:y]].max
 
         input jump: true
 
         break if player[:state] == :idle
-
-        next unless tick_count > 1000
-
-        raise "Expected #{player_description} to reach the ground, but he didn't"
       end
     end
 
@@ -333,6 +311,16 @@ module PlayerTests
       @initial_attributes = initial_attributes
       @initial_attributes.each do |attribute, value|
         player[attribute] = value.dup
+      end
+    end
+
+    def safe_loop(fail_message, &block)
+      start_tick = tick_count
+      loop do
+        instance_eval(&block)
+
+        next unless tick_count > start_tick + 1000
+        raise fail_message
       end
     end
 
