@@ -200,21 +200,61 @@ def test_player_should_eventually_move_down_after_jumping(args, assert)
 end
 
 def test_player_should_only_fall_until_the_floor(args, assert)
-  PlayerTests.test(args, assert) do
-    with state: :jump, position: { x: 0, y: 5 }
+  %i[idle run].each do |state|
+    PlayerTests.test(args, assert) do
+      with state: state
+      input jump: true
 
-    loop do
-      y_before_tick = player[:position][:y]
+      loop do
+        y_before_tick = player[:position][:y]
+
+        no_input
+
+        break if player[:position][:y].zero? && y_before_tick == player[:position][:y]
+
+        if tick_count > 1000
+          raise "Expected #{player_description} to reach the ground, but he didn't"
+        elsif player[:position][:y] < 0
+          raise "Expected #{player_description} to reach the ground, but he fell through"
+        end
+      end
+    end
+  end
+
+  assert.ok!
+end
+
+def test_player_should_not_be_able_to_jump_again_without_releasing_the_jump_button(args, assert)
+  %i[idle run].each do |state|
+    PlayerTests.test(args, assert) do
+      with state: state
+      input jump: true
+      no_input # Releasing jump button mid-air doesn't count as releasing
+
+      loop do
+        input jump: true
+
+        break if player[:state] == :idle
+
+        next unless tick_count > 1000
+
+        raise "Expected #{player_description} to land, but he didn't"
+      end
+
+      input jump: true
+
+      assert.equal! player[:state],
+                    :idle,
+                    'Expected player not to be able to jump again ' \
+                    'without releasing the jump button but he could'
 
       no_input
+      input jump: true
 
-      break if player[:position][:y].zero? && y_before_tick == player[:position][:y]
-
-      if tick_count > 1000
-        raise "Expected #{player_description} to reach the ground, but he didn't"
-      elsif player[:position][:y] < 0
-        raise "Expected #{player_description} to reach the ground, but he fell through"
-      end
+      assert.equal! player[:state],
+                    :jump,
+                    'Expected player to be able to jump again ' \
+                    "after releasing the jump button but he couldn't"
     end
   end
 
