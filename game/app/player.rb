@@ -33,7 +33,7 @@ module Player
         start_jump(player) if input_actions[:jump] && player[:can_jump]
         player[:can_jump] = true unless input_actions[:jump]
       when :jump
-        player[:y_velocity] += 0.08 if input_actions[:jump]
+        player[:y_velocity] += 0.08 if input_actions[:jump] && player[:y_velocity].positive?
       end
     end
 

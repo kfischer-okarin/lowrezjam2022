@@ -285,6 +285,52 @@ def test_player_should_jump_higher_when_holding_the_jump_button(args, assert)
   end
 end
 
+def test_player_should_not_fall_slower_when_holding_the_jump_button(args, assert)
+  %i[idle run].each do |state|
+    y_after_holding_button_when_falling = 0
+    y_after_just_falling = 0
+
+    PlayerTests.test(args, assert) do
+      with state: state
+      input jump: true
+
+      safe_loop "Expected #{player_description} to start falling, but he didn't" do
+        y_before_tick = player[:position][:y]
+
+        input jump: true
+
+        break if player[:position][:y] < y_before_tick
+      end
+
+      10.times { input jump: true }
+
+      y_after_holding_button_when_falling = player[:position][:y]
+    end
+
+    PlayerTests.test(args, assert) do
+      with state: state
+      input jump: true
+
+      safe_loop "Expected #{player_description} to start falling, but he didn't" do
+        y_before_tick = player[:position][:y]
+
+        input jump: true
+
+        break if player[:position][:y] < y_before_tick
+      end
+
+      10.times { no_input }
+
+      y_after_just_falling = player[:position][:y]
+    end
+
+    assert.equal! y_after_holding_button_when_falling, y_after_just_falling,
+                 "Expected player to not fall slower when holding the jump button, " \
+                 "but with holding (y position: #{y_after_holding_button_when_falling}) " \
+                 "was higher than without holding (y position: #{y_after_just_falling})"
+  end
+end
+
 module PlayerTests
   class << self
     def test(args, assert, &block)
