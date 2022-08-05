@@ -119,3 +119,17 @@ def test_player_movement_stop_moving(args, assert)
   end
 end
 
+def test_player_should_have_vertical_movement_after_jumping(args, assert)
+  %i[idle run].each do |state|
+    player = Player.build
+    player[:state] = state
+    args.state.input_actions = { jump: true }
+
+    Player.update!(player, args.state)
+
+    assert.true! player[:movement][:y] > 0,
+                  "Expected #{args.state.input_actions} to give player " \
+                  "with state #{{ state: state }} vertical movement " \
+                  "but it was #{player[:movement]}"
+  end
+end

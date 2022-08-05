@@ -22,11 +22,16 @@ module Player
       case player[:state]
       when :idle
         player[:state] = :run if input_actions[:move]
-        player[:state] = :jump if input_actions[:jump]
+        start_jump(player) if input_actions[:jump]
       when :run
         player[:state] = :idle unless input_actions[:move]
-        player[:state] = :jump if input_actions[:jump]
+        start_jump(player) if input_actions[:jump]
       end
+    end
+
+    def start_jump(player)
+      player[:state] = :jump
+      player[:movement][:y] = 1
     end
 
     def update_face_direction(player, input_actions)
