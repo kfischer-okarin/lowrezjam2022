@@ -158,6 +158,29 @@ def test_player_should_move_up_several_ticks_after_jumping(args, assert)
   end
 end
 
+def test_player_should_eventually_move_down_after_jumping(args, assert)
+  %i[idle run].each do |state|
+    PlayerTests.test(args, assert) do
+      with state: state
+      input jump: true
+
+      loop do
+        y_before_tick = player[:position][:y]
+
+        no_input
+
+        break if player[:position][:y] < y_before_tick
+
+        next unless tick_count > 1000
+
+        raise "Expected #{player_description} to eventually fall down after jumping, but he didn't"
+      end
+    end
+  end
+
+  assert.ok!
+end
+
 module PlayerTests
   class << self
     def test(args, assert, &block)
