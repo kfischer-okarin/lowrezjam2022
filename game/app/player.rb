@@ -4,6 +4,7 @@ module Player
       {
         position: { x: 0, y: 0 },
         movement: { x: 0, y: 0 },
+        y_velocity: 0,
         state: :idle,
         face_direction: :right,
       }
@@ -32,7 +33,7 @@ module Player
 
     def start_jump(player)
       player[:state] = :jump
-      player[:movement][:y] = 1
+      player[:y_velocity] = 2
     end
 
     def update_face_direction(player, input_actions)

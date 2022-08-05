@@ -138,6 +138,26 @@ def test_player_should_move_up_after_jumping(args, assert)
   end
 end
 
+def test_player_should_move_up_several_ticks_after_jumping(args, assert)
+  %i[idle run].each do |state|
+    PlayerTests.test(args, assert) do
+      with state: state
+      input jump: true
+
+      2.times do
+        y_before_tick = player[:position][:y]
+
+        no_input
+
+        assert.true! player[:position][:y] > y_before_tick,
+                     "Expected #{last_input_actions} to move #{player_description} " \
+                     "upwards for more than #{tick_count} ticks " \
+                     "but y position change was: #{player[:position][:y] - y_before_tick}"
+      end
+    end
+  end
+end
+
 module PlayerTests
   class << self
     def test(args, assert, &block)
@@ -150,9 +170,14 @@ module PlayerTests
 
     def initialize(args, assert)
       @args = args
+      @args.tick_count = 0
       @assert = assert
       @player = Player.build
       @initial_attributes = nil
+    end
+
+    def tick_count
+      @args.tick_count
     end
 
     def with(initial_attributes)
@@ -167,6 +192,8 @@ module PlayerTests
       @args.state.input_actions = actions
 
       Player.update!(@player, @args.state)
+
+      @args.tick_count += 1
     end
 
     def no_input

@@ -1,11 +1,16 @@
 module Movement
   class << self
     def apply!(entity)
+      apply_gravity(entity)
       move(entity, :x)
       move(entity, :y)
     end
 
     private
+
+    def apply_gravity(entity)
+      entity[:movement][:y] += entity[:y_velocity]
+    end
 
     def move(entity, dimension)
       abs_movement = entity[:movement][dimension].abs
