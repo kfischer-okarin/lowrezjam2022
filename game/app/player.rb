@@ -14,6 +14,7 @@ module Player
       update_state(player, input_actions)
       update_face_direction(player, input_actions)
       update_movement(player, input_actions)
+      Movement.apply!(player)
     end
 
     private

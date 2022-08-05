@@ -75,7 +75,6 @@ end
 
 def update(state)
   Player.update!(state.player, state)
-  Movement.apply!(state.player)
 end
 
 $gtk.reset

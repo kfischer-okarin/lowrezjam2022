@@ -79,22 +79,30 @@ def test_player_face_direction(args, assert)
   end
 end
 
-def test_player_movement(args, assert)
-  [
-    { direction: :right, movement: { x: 1, y: 0 } },
-    { direction: :left, movement: { x: -1, y: 0 } },
-  ].each do |test_case|
-    %i[idle run jump].each do |state|
-      PlayerTests.test(args, assert) do
-        with state: state
+def test_player_move_right(args, assert)
+  %i[idle run jump].each do |state|
+    PlayerTests.test(args, assert) do
+      with state: state, position: { x: 0, y: 0 }
 
-        input move: test_case[:direction]
+      input move: :right
 
-        assert.equal! player[:movement],
-                      test_case[:movement],
-                      "Expected #{last_input_actions} to change #{player_description} " \
-                      "to have movement #{test_case[:movement]} but it was #{player[:movement]}"
-      end
+      assert.true! player[:position][:x] > 0,
+                   "Expected #{last_input_actions} to change #{player_description} " \
+                   "to have a x position > 0 but it was #{player[:position]}"
+    end
+  end
+end
+
+def test_player_move_left(args, assert)
+  %i[idle run jump].each do |state|
+    PlayerTests.test(args, assert) do
+      with state: state, position: { x: 0, y: 0 }
+
+      input move: :left
+
+      assert.true! player[:position][:x] < 0,
+                   "Expected #{last_input_actions} to change #{player_description} " \
+                   "to have a x position < 0 but it was #{player[:position]}"
     end
   end
 end
@@ -102,28 +110,30 @@ end
 def test_player_movement_stop_moving(args, assert)
   %i[run jump].each do |state|
     PlayerTests.test(args, assert) do
-      with state: state, movement: { x: 1, y: 0 }
+      with state: state
+      input move: :right
+      x_before_stopping = player[:position][:x]
 
       no_input
 
-      assert.equal! player[:movement],
-                    { x: 0, y: 0 },
+      assert.equal! player[:position][:x],
+                    x_before_stopping,
                     "Expected #{last_input_actions} to make #{player_description} " \
-                    'stop moving'
+                    "stop moving x position changed from #{x_before_stopping} to #{player[:position][:x]}"
     end
   end
 end
 
-def test_player_should_have_vertical_movement_after_jumping(args, assert)
+def test_player_should_move_up_after_jumping(args, assert)
   %i[idle run].each do |state|
     PlayerTests.test(args, assert) do
-      with state: state
+      with state: state, position: { x: 0, y: 0 }
 
       input jump: true
 
-      assert.true! player[:movement][:y] > 0,
-                   "Expected #{last_input_actions} to give #{player_description} " \
-                   "vertical movement but it was #{player[:movement]}"
+      assert.true! player[:position][:y] > 0,
+                   "Expected #{last_input_actions} to move #{player_description} " \
+                   "upwards movement but it was #{player[:position]}"
     end
   end
 end
