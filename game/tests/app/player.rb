@@ -261,6 +261,52 @@ def test_player_should_not_be_able_to_jump_again_without_releasing_the_jump_butt
   assert.ok!
 end
 
+def test_player_should_jump_higher_when_holding_the_jump_button(args, assert)
+  %i[idle run].each do |state|
+    max_height_without_holding_the_button = 0
+    max_height_with_holding_the_button = 0
+
+    PlayerTests.test(args, assert) do
+      with state: state
+      input jump: true
+
+      loop do
+        max_height_without_holding_the_button = [max_height_without_holding_the_button, player[:position][:y]].max
+
+        no_input
+
+        break if player[:state] == :idle
+
+        next unless tick_count > 1000
+
+        raise "Expected #{player_description} to reach the ground, but he didn't"
+      end
+    end
+
+    PlayerTests.test(args, assert) do
+      with state: state
+      input jump: true
+
+      loop do
+        max_height_with_holding_the_button = [max_height_with_holding_the_button, player[:position][:y]].max
+
+        input jump: true
+
+        break if player[:state] == :idle
+
+        next unless tick_count > 1000
+
+        raise "Expected #{player_description} to reach the ground, but he didn't"
+      end
+    end
+
+    assert.true! max_height_with_holding_the_button > max_height_without_holding_the_button,
+                 'Expected player to jump higher when holding the jump button, ' \
+                 "but with holding (y position: #{max_height_with_holding_the_button}) " \
+                 "was not higher than without holding (y position: #{max_height_without_holding_the_button})"
+  end
+end
+
 module PlayerTests
   class << self
     def test(args, assert, &block)
