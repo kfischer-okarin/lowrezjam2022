@@ -352,6 +352,25 @@ def test_player_should_have_maximum_falling_speed(args, assert)
   end
 end
 
+def test_player_should_fall_until_collider(args, assert)
+  PlayerTests.test(args, assert) do
+    with state: :jump, position: { x: 0, y: 50 }
+
+    collider_at x: -10, y: 20, w: 20, h: 5
+
+    safe_loop "Expected #{player_description} to stop falling, but he didn't" do
+      no_input
+
+      break if player[:state] == :idle
+    end
+
+    assert.equal! player[:position][:y],
+                  25,
+                  "Expected #{player_description} to stop falling at the collider " \
+                  "but his y position was #{player[:position][:y]}"
+  end
+end
+
 module PlayerTests
   class << self
     def test(args, assert, &block)
@@ -380,6 +399,10 @@ module PlayerTests
       @initial_attributes.each do |attribute, value|
         player[attribute] = value.dup
       end
+    end
+
+    def collider_at(x:, y:, w:, h:)
+      @args.state.colliders << { collider: { x: x, y: y, w: w, h: h } }
     end
 
     def safe_loop(fail_message, &block)
