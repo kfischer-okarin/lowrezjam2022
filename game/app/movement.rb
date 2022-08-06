@@ -1,11 +1,11 @@
 module Movement
   class << self
-    def apply!(entity)
+    def apply!(entity, colliders)
       apply_gravity(entity)
-      move(entity, :x)
-      move(entity, :y)
+      move(entity, :x, colliders: colliders)
+      y_collision = move(entity, :y, colliders: colliders)
       {
-        stopped_falling: stop_falling(entity)
+        stopped_falling: stop_falling(entity, y_collision)
       }
     end
 
@@ -16,24 +16,55 @@ module Movement
       entity[:y_velocity] = [entity[:y_velocity] - GRAVITY, -MAX_FALL_VELOCITY].max
     end
 
-    def move(entity, dimension)
+    def move(entity, dimension, colliders:)
       abs_movement = entity[:movement][dimension].abs
       sign = entity[:movement][dimension].sign
-      position = entity[:position]
+      entity_at_next_position = {
+        position: entity[:position].dup,
+        collider_bounds: entity[:collider_bounds],
+        collider: entity[:collider].dup
+      }
+      next_position = entity_at_next_position[:position]
+      collided_with = nil
 
       while abs_movement >= 1
-        position[dimension] += sign
         abs_movement -= 1
-        # TODO: collision detection
+        next_position[dimension] += sign
+        update_collider entity_at_next_position
+        collided_with = check_collision(entity_at_next_position, colliders)
+        if collided_with
+          next_position[dimension] -= sign
+          update_collider entity_at_next_position
+          abs_movement = 0
+        end
       end
 
+      entity[:position] = next_position
+      entity[:collider] = entity_at_next_position[:collider]
       entity[:movement][dimension] = abs_movement * sign
+      collided_with
     end
 
-    def stop_falling(entity)
-      return false unless entity[:position][:y] <= 0 && entity[:y_velocity].negative?
+    def update_collider(entity)
+      position = entity[:position]
+      collider_bounds = entity[:collider_bounds]
+      collider = entity[:collider]
+      collider[:x] = position[:x] + collider_bounds[:x]
+      collider[:y] = position[:y] + collider_bounds[:y]
+      collider[:w] = collider_bounds[:w]
+      collider[:h] = collider_bounds[:h]
+    end
 
-      entity[:position][:y] = 0
+    def check_collision(entity, colliders)
+      colliders.find { |collider|
+        entity[:collider].intersect_rect? collider[:collider]
+      }
+    end
+
+    def stop_falling(entity, y_collision)
+      return false unless y_collision
+
+      entity[:position][:y] = y_collision[:collider].top
       entity[:y_velocity] = 0
       true
     end

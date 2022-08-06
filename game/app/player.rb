@@ -4,6 +4,8 @@ module Player
       {
         position: { x: 0, y: 0 },
         movement: { x: 0, y: 0 },
+        collider_bounds: { x: -4, y: 0, w: 10, h: 23 },
+        collider: {},
         y_velocity: 0,
         state: :idle,
         face_direction: :right,
@@ -16,7 +18,7 @@ module Player
       update_state(player, input_actions)
       update_face_direction(player, input_actions)
       update_movement(player, input_actions)
-      movement_result = Movement.apply!(player)
+      movement_result = Movement.apply!(player, state.colliders)
       land(player) if movement_result[:stopped_falling]
     end
 

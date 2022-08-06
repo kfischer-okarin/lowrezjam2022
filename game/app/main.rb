@@ -33,6 +33,13 @@ def setup(state)
     next_animation: nil,
     animation_state: nil
   }
+  state.colliders = get_stage_bounds
+end
+
+def get_stage_bounds
+  [
+    { collider: { x: -1000, y: -5, w: 2000, h: 5 } }
+  ]
 end
 
 def load_player_animations
