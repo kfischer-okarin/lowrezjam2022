@@ -54,7 +54,7 @@ def render(state, outputs)
   screen.width = SCREEN_W
   screen.height = SCREEN_H
 
-  state.rendered_player[:sprite][:x] = state.player[:position][:x]
+  state.rendered_player[:sprite][:x] = state.player[:position][:x] - 8
   state.rendered_player[:sprite][:y] = state.player[:position][:y]
   state.rendered_player[:next_animation] = :"#{state.player[:state]}_#{state.player[:face_direction]}"
   update_animation(state.rendered_player)
