@@ -405,7 +405,9 @@ module PlayerTests
     def initialize(args, assert)
       @args = args
       @args.tick_count = 0
-      @args.state.colliders = get_stage_bounds
+      @args.state.colliders = [
+        { collider: { x: -1000, y: -5, w: 2000, h: 5 } }
+      ]
       @assert = assert
       @player = Player.build
       @initial_attributes = nil
