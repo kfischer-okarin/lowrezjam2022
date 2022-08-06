@@ -11,6 +11,10 @@ require 'app/resources.rb'
 SCREEN_W = 64
 SCREEN_H = 64
 
+PLAYER_JUMP_SPEED = 2
+PLAYER_JUMP_ACCELERATION = 0.08
+GRAVITY = 0.15
+
 def tick(args)
   state = args.state
   setup(state) if args.tick_count.zero?

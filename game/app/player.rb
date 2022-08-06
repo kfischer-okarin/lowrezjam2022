@@ -33,13 +33,13 @@ module Player
         start_jump(player) if input_actions[:jump] && player[:can_jump]
         player[:can_jump] = true unless input_actions[:jump]
       when :jump
-        player[:y_velocity] += 0.08 if input_actions[:jump] && player[:y_velocity].positive?
+        player[:y_velocity] += PLAYER_JUMP_ACCELERATION if input_actions[:jump] && player[:y_velocity].positive?
       end
     end
 
     def start_jump(player)
       player[:state] = :jump
-      player[:y_velocity] = 2
+      player[:y_velocity] = PLAYER_JUMP_SPEED
       player[:can_jump] = false
     end
 
