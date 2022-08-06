@@ -3,6 +3,7 @@ require 'lib/debug_mode.rb'
 require 'lib/extra_keys.rb'
 require 'lib/resources.rb'
 
+require 'app/camera.rb'
 require 'app/input_actions.rb'
 require 'app/movement.rb'
 require 'app/player.rb'
@@ -25,6 +26,7 @@ def tick(args)
 end
 
 def setup(state)
+  state.camera = Camera.build
   state.player = Player.build
   state.rendered_player = {
     animations: load_player_animations,
@@ -61,10 +63,15 @@ def render(state, outputs)
   screen.width = SCREEN_W
   screen.height = SCREEN_H
 
+  camera = state.camera
+
   state.rendered_player[:sprite][:x] = state.player[:position][:x] - 8
   state.rendered_player[:sprite][:y] = state.player[:position][:y]
+  Camera.apply! camera, state.rendered_player[:sprite]
+
   state.rendered_player[:next_animation] = :"#{state.player[:state]}_#{state.player[:face_direction]}"
   update_animation(state.rendered_player)
+
   screen.primitives << state.rendered_player[:sprite]
 
   outputs.background_color = [0, 0, 0]
@@ -87,6 +94,7 @@ end
 
 def update(state)
   Player.update!(state.player, state)
+  Camera.follow_player! state.camera, state.player
 end
 
 $gtk.reset
