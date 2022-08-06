@@ -13,7 +13,7 @@ module Movement
 
     def apply_gravity(entity)
       entity[:movement][:y] += entity[:y_velocity]
-      entity[:y_velocity] -= GRAVITY
+      entity[:y_velocity] = [entity[:y_velocity] - GRAVITY, -MAX_FALL_VELOCITY].max
     end
 
     def move(entity, dimension)

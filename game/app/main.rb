@@ -14,6 +14,7 @@ SCREEN_H = 64
 PLAYER_JUMP_SPEED = 2
 PLAYER_JUMP_ACCELERATION = 0.08
 GRAVITY = 0.15
+MAX_FALL_VELOCITY = 2
 
 def tick(args)
   state = args.state

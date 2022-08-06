@@ -331,6 +331,27 @@ def test_player_should_not_fall_slower_when_holding_the_jump_button(args, assert
   end
 end
 
+def test_player_should_have_maximum_falling_speed(args, assert)
+  PlayerTests.test(args, assert) do
+    with state: :jump, position: { x: 0, y: 50 }
+    last_y_velocity = player[:y_velocity]
+
+    safe_loop "Expected #{player_description} to reach maximum speed, but he didn't" do
+      no_input
+
+      y_velocity = player[:y_velocity]
+
+      break if y_velocity == last_y_velocity
+
+      raise 'Player reached floor before reaching maximum speed' if player[:state] == :idle
+
+      last_y_velocity = y_velocity
+    end
+
+    assert.ok!
+  end
+end
+
 module PlayerTests
   class << self
     def test(args, assert, &block)
