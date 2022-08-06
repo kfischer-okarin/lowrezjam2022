@@ -371,6 +371,27 @@ def test_player_should_fall_until_collider(args, assert)
   end
 end
 
+def test_player_should_not_walk_through_colliders(args, assert)
+  PlayerTests.test(args, assert) do
+    with state: :idle, position: { x: 0, y: 0 }
+
+    collider_at x: 20, y: 0, w: 10, h: 10
+
+    safe_loop "Expected #{player_description} to stop walking, but he didn't" do
+      x_before_tick = player[:position][:x]
+
+      input move: :right
+
+      break if player[:position][:x] == x_before_tick
+    end
+
+    assert.true! player[:position][:x] < 20,
+                 "Expected #{player_description} to not be able to walk through the " \
+                 "collider #{args.state.colliders.last} " \
+                 "but he could"
+  end
+end
+
 module PlayerTests
   class << self
     def test(args, assert, &block)
