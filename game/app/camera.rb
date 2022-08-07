@@ -12,7 +12,8 @@ module Camera
     end
 
     def follow_player!(camera, player, immediately: false)
-      camera[:position][:x] = player[:position][:x]
+      x_offset = CAMERA_FOLLOW_X_OFFSET[player[:face_direction]]
+      camera[:position][:x] = player[:position][:x] + x_offset
       camera[:position][:y] = player[:position][:y] + CAMERA_FOLLOW_Y_OFFSET
     end
   end

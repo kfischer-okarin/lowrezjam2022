@@ -70,6 +70,40 @@ def test_camera_should_follow_player_when_jumping_left(args, assert)
   end
 end
 
+def test_camera_should_look_right_when_player_faces_right(args, assert)
+  CameraTests.test(args) do
+    player_runs :right
+
+    safe_loop "Expected camera to stop moving but it didn't" do
+      x_position_before = camera[:position][:x]
+
+      update_camera
+
+      break if x_position_before == camera[:position][:x]
+    end
+
+    assert.true! camera[:position][:x] + 32 > player[:position][:x],
+                 "Expected camera to focus right of the player but it didn't"
+  end
+end
+
+def test_camera_should_look_left_when_player_faces_left(args, assert)
+  CameraTests.test(args) do
+    player_runs :left
+
+    safe_loop "Expected camera to stop moving but it didn't" do
+      x_position_before = camera[:position][:x]
+
+      update_camera
+
+      break if x_position_before == camera[:position][:x]
+    end
+
+    assert.true! camera[:position][:x] + 32 < player[:position][:x],
+                 "Expected camera to focus left of the player but it didn't"
+  end
+end
+
 module CameraTests
   class << self
     def test(args, &block)
