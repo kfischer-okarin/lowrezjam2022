@@ -40,7 +40,7 @@ module TestHelpers
     end
   end
 
-  class PlayerTestDSL < DSL::Base
+  class PlayerDSL < DSL::Base
     include DSL::Colliders
 
     attr_reader :player, :last_input_actions

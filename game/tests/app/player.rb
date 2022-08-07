@@ -397,7 +397,7 @@ end
 module PlayerTests
   class << self
     def test(args, &block)
-      TestHelpers::PlayerTestDSL.new(args).instance_eval(&block)
+      TestHelpers::PlayerDSL.new(args).instance_eval(&block)
     end
   end
 end
