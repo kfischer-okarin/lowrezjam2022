@@ -16,7 +16,7 @@ STAGE_W = 240
 STAGE_H = 120
 
 PLAYER_RUN_SPEED = 1
-PLAYER_JUMP_SPEED = 2
+PLAYER_JUMP_SPEED = 2.2
 PLAYER_JUMP_ACCELERATION = 0.08
 GRAVITY = 0.15
 MAX_FALL_VELOCITY = 2
@@ -29,7 +29,7 @@ CAMERA_FOLLOW_Y_OFFSET = -5
 CAMERA_MIN_X = 0
 CAMERA_MAX_X = STAGE_W - SCREEN_W
 CAMERA_MIN_Y = -5
-CAMERA_MAX_Y = STAGE_H - SCREEN_H
+CAMERA_MAX_Y = STAGE_H - SCREEN_H - 5
 
 def tick(args)
   state = args.state
@@ -42,6 +42,8 @@ end
 def setup(state)
   state.camera = Camera.build
   state.player = Player.build
+  state.player[:position][:x] = 20
+  Camera.follow_player! state.camera, state.player, immediately: true
   state.rendered_player = {
     animations: load_player_animations,
     sprite: {}.sprite!,
@@ -49,13 +51,47 @@ def setup(state)
     next_animation: nil,
     animation_state: nil
   }
-  state.colliders = get_stage_bounds
+  state.colliders = get_stage_bounds + load_colliders
 end
 
 def get_stage_bounds
   [
-    { collider: { x: -1000, y: -5, w: 2000, h: 5 } }
+    { collider: { x: 0, y: -5, w: STAGE_W, h: 5 } },
+    { collider: { x: 0, y: STAGE_H, w: STAGE_W, h: 5 } },
+    { collider: { x: 0, y: 0, w: 5, h: STAGE_H } },
+    { collider: { x: STAGE_W - 5, y: 0, w: 5, h: STAGE_H } }
   ]
+end
+
+def load_colliders
+  stage_data = Animations.deep_symbolize_keys! $gtk.parse_json_file('resources/stage.ldtk')
+  level = stage_data[:levels][0]
+  layer = level[:layerInstances][0]
+  grid = layer[:intGridCsv]
+  [].tap { |result|
+    tiles_per_row = STAGE_W.idiv(6)
+    tiles_per_col = STAGE_H.idiv(6)
+    grid.each_slice(tiles_per_row).reverse_each.each_with_index do |row, tile_y|
+      next if tile_y == 0 || tile_y == tiles_per_col - 1
+
+      row.each_with_index do |cell, tile_x|
+        next if cell.zero? || tile_x == 0 || tile_x == tiles_per_row - 1
+
+        x = tile_x * 6
+        y = tile_y * 6 - 5
+
+        neighboring_collider = result.find { |collider|
+          collider[:collider].right == x
+        }
+
+        if neighboring_collider
+          neighboring_collider[:collider][:w] += 6
+        else
+          result << { collider: { x: x, y: y, w: 6, h: 5 } }
+        end
+      end
+    end
+  }
 end
 
 def load_player_animations
