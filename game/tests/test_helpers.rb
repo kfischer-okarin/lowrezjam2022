@@ -84,6 +84,7 @@ module TestHelpers
       super
 
       @player = Player.build
+      @player[:position][:x] = 100
       @camera = Camera.build
       Camera.follow_player! @camera, @player, immediately: true
     end
@@ -92,8 +93,25 @@ module TestHelpers
       @camera[:position] = { x: x, y: y }
     end
 
+    def player_runs(direction)
+      @player[:state] = :run
+      move_player(direction)
+    end
+
+    def player_jumps(direction)
+      @player[:state] = :jump
+      move_player(direction)
+    end
+
     def update_camera
       Camera.follow_player! @camera, @player
+    end
+
+    private
+
+    def move_player(direction)
+      @player[:face_direction] = direction
+      @player[:position][:x] += direction == :right ? PLAYER_RUN_SPEED : -PLAYER_RUN_SPEED
     end
   end
 end

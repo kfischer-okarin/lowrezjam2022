@@ -12,6 +12,7 @@ module Camera
     end
 
     def follow_player!(camera, player, immediately: false)
+      camera[:position][:x] = player[:position][:x]
       camera[:position][:y] = player[:position][:y]
     end
   end
