@@ -18,6 +18,8 @@ PLAYER_JUMP_ACCELERATION = 0.08
 GRAVITY = 0.15
 MAX_FALL_VELOCITY = 2
 
+CAMERA_FOLLOW_Y_OFFSET = -5
+
 def tick(args)
   state = args.state
   setup(state) if args.tick_count.zero?
