@@ -120,6 +120,26 @@ def test_camera_should_look_left_when_player_faces_left(args, assert)
   end
 end
 
+def test_camera_should_not_move_too_suddenly(args, assert)
+  CameraTests.test(args) do
+    camera_x_before = camera[:position][:x]
+
+    player_runs :right
+    update_camera
+
+    assert.true! (camera[:position][:x] - camera_x_before).abs < 10,
+                 "Expected camera to move slowly but it didn't"
+
+    camera_x_before = camera[:position][:x]
+
+    player_runs :left
+    update_camera
+
+    assert.true! (camera[:position][:x] - camera_x_before).abs < 10,
+                 "Expected camera to move slowly but it didn't"
+  end
+end
+
 module CameraTests
   class << self
     def test(args, &block)
