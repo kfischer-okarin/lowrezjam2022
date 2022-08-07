@@ -1,30 +1,33 @@
 module TestHelpers
-  class TestDSL
-    def initialize(args)
-      @args = args
-      @args.tick_count = 0
-    end
-
-    def tick_count
-      @args.tick_count
-    end
-
-    def safe_loop(fail_message, &block)
-      start_tick = tick_count
-      loop do
-        instance_eval(&block)
-
-        next unless tick_count > start_tick + 1000
-        raise fail_message
+  module DSL
+    class Base
+      def initialize(args)
+        @args = args
+        @args.tick_count = 0
       end
-    end
 
-    def next_tick
-      @args.tick_count += 1
+      def tick_count
+        @args.tick_count
+      end
+
+      def safe_loop(fail_message, &block)
+        start_tick = tick_count
+        loop do
+          instance_eval(&block)
+
+          next unless tick_count > start_tick + 1000
+          raise fail_message
+        end
+      end
+
+      def next_tick
+        @args.tick_count += 1
+      end
     end
   end
 
-  class PlayerTestDSL < TestDSL
+
+  class PlayerTestDSL < DSL::Base
     attr_reader :player, :last_input_actions
 
     def initialize(args)
