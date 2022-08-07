@@ -53,7 +53,7 @@ module Player
 
     def update_movement(player, input_actions)
       if input_actions[:move]
-        player[:movement][:x] = player[:face_direction] == :right ? 1 : -1
+        player[:movement][:x] = player[:face_direction] == :right ? PLAYER_RUN_SPEED : -PLAYER_RUN_SPEED
       else
         player[:movement][:x] = 0
       end
