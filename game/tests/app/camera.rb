@@ -25,9 +25,13 @@ end
 def test_camera_should_follow_player_when_running_right(args, assert)
   CameraTests.test(args) do
     camera_x_before = camera[:position][:x]
-
     player_runs :right
-    update_camera
+
+    safe_loop "Expected camera to move but it didn't" do
+      update_camera
+
+      break if camera[:position][:x] != camera_x_before
+    end
 
     assert.true! camera[:position][:x] > camera_x_before,
                  "Expected camera to follow player right but it didn't"
@@ -37,9 +41,13 @@ end
 def test_camera_should_follow_player_when_running_left(args, assert)
   CameraTests.test(args) do
     camera_x_before = camera[:position][:x]
-
     player_runs :left
-    update_camera
+
+    safe_loop "Expected camera to move but it didn't" do
+      update_camera
+
+      break if camera[:position][:x] != camera_x_before
+    end
 
     assert.true! camera[:position][:x] < camera_x_before,
                  "Expected camera to follow player left but it didn't"
@@ -49,9 +57,13 @@ end
 def test_camera_should_follow_player_when_jumping_right(args, assert)
   CameraTests.test(args) do
     camera_x_before = camera[:position][:x]
-
     player_jumps :right
-    update_camera
+
+    safe_loop "Expected camera to move but it didn't" do
+      update_camera
+
+      break if camera[:position][:x] != camera_x_before
+    end
 
     assert.true! camera[:position][:x] > camera_x_before,
                  "Expected camera to follow player right but it didn't"
@@ -61,9 +73,13 @@ end
 def test_camera_should_follow_player_when_jumping_left(args, assert)
   CameraTests.test(args) do
     camera_x_before = camera[:position][:x]
-
     player_jumps :left
-    update_camera
+
+    safe_loop "Expected camera to move but it didn't" do
+      update_camera
+
+      break if camera[:position][:x] != camera_x_before
+    end
 
     assert.true! camera[:position][:x] < camera_x_before,
                  "Expected camera to follow player left but it didn't"
