@@ -76,4 +76,24 @@ module TestHelpers
       "player with #{@initial_attributes}"
     end
   end
+
+  class CameraDSL < DSL::Base
+    attr_reader :player, :camera
+
+    def initialize(args)
+      super
+
+      @player = Player.build
+      @camera = Camera.build
+      Camera.follow_player! @camera, @player, immediately: true
+    end
+
+    def camera_position(x:, y:)
+      @camera[:position] = { x: x, y: y }
+    end
+
+    def update_camera
+      Camera.follow_player! @camera, @player
+    end
+  end
 end
