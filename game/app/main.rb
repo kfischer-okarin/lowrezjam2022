@@ -12,8 +12,8 @@ require 'app/resources.rb'
 SCREEN_W = 64
 SCREEN_H = 64
 
-STAGE_W = 200
-STAGE_H = 200
+STAGE_W = 240
+STAGE_H = 120
 
 PLAYER_RUN_SPEED = 1
 PLAYER_JUMP_SPEED = 2
@@ -78,6 +78,10 @@ def render(state, outputs)
   screen.height = SCREEN_H
 
   camera = state.camera
+
+  stage_sprite = { x: 0, y: -5, w: STAGE_W, h: STAGE_H, path: 'resources/stage/png/Level_0.png' }.sprite!
+  Camera.apply! camera, stage_sprite
+  screen.primitives << stage_sprite
 
   state.rendered_player[:sprite][:x] = state.player[:position][:x] - 8
   state.rendered_player[:sprite][:y] = state.player[:position][:y]
