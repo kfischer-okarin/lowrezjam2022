@@ -19,8 +19,8 @@ GRAVITY = 0.15
 MAX_FALL_VELOCITY = 2
 
 CAMERA_FOLLOW_X_OFFSET = {
-  right: -15,
-  left: -49
+  right: -20,
+  left: -44
 }.freeze
 CAMERA_FOLLOW_Y_OFFSET = -5
 
