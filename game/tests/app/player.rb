@@ -1,7 +1,7 @@
 require 'tests/test_helpers.rb'
 
 def test_player_start_running(args, assert)
-  PlayerTests.test(args, assert) do
+  PlayerTests.test(args) do
     input move: :right
 
     assert.equal! player[:state], :run
@@ -9,7 +9,7 @@ def test_player_start_running(args, assert)
 end
 
 def test_player_stop_running(args, assert)
-  PlayerTests.test(args, assert) do
+  PlayerTests.test(args) do
     with state: :run
 
     no_input
@@ -19,7 +19,7 @@ def test_player_stop_running(args, assert)
 end
 
 def test_player_keep_idle(args, assert)
-  PlayerTests.test(args, assert) do
+  PlayerTests.test(args) do
     no_input
 
     assert.equal! player[:state], :idle
@@ -28,7 +28,7 @@ end
 
 def test_player_keep_running(args, assert)
   %i[left right].each do |direction|
-    PlayerTests.test(args, assert) do
+    PlayerTests.test(args) do
       with state: :run
 
       input move: direction
@@ -44,7 +44,7 @@ def test_player_start_jumping_when_idle(args, assert)
     { move: :right, jump: true },
     { move: :left, jump: true }
   ].each do |input_actions|
-    PlayerTests.test(args, assert) do
+    PlayerTests.test(args) do
       input input_actions
 
       assert.equal! player[:state], :jump
@@ -53,7 +53,7 @@ def test_player_start_jumping_when_idle(args, assert)
 end
 
 def test_player_start_jumping_when_running(args, assert)
-  PlayerTests.test(args, assert) do
+  PlayerTests.test(args) do
     with state: :run
 
     input jump: true
@@ -63,7 +63,7 @@ def test_player_start_jumping_when_running(args, assert)
 end
 
 def test_player_stop_jumping(args, assert)
-  PlayerTests.test(args, assert) do
+  PlayerTests.test(args) do
     with state: :jump, position: { x: 0, y: 5 }
 
     safe_loop "Expected #{player_description} to become idle, but he didn't" do
@@ -80,7 +80,7 @@ def test_player_face_direction(args, assert)
   %i[left right].each do |initial_face_direction|
     %i[left right].each do |move_direction|
       %i[idle run jump].each do |state|
-        PlayerTests.test(args, assert) do
+        PlayerTests.test(args) do
           with state: state, face_direction: initial_face_direction
 
           input move: move_direction
@@ -97,7 +97,7 @@ end
 
 def test_player_move_right(args, assert)
   %i[idle run jump].each do |state|
-    PlayerTests.test(args, assert) do
+    PlayerTests.test(args) do
       with state: state, position: { x: 0, y: 0 }
 
       input move: :right
@@ -111,7 +111,7 @@ end
 
 def test_player_move_left(args, assert)
   %i[idle run jump].each do |state|
-    PlayerTests.test(args, assert) do
+    PlayerTests.test(args) do
       with state: state, position: { x: 0, y: 0 }
 
       input move: :left
@@ -125,7 +125,7 @@ end
 
 def test_player_movement_stop_moving(args, assert)
   %i[run jump].each do |state|
-    PlayerTests.test(args, assert) do
+    PlayerTests.test(args) do
       with state: state
       input move: :right
       x_before_stopping = player[:position][:x]
@@ -142,7 +142,7 @@ end
 
 def test_player_should_move_up_after_jumping(args, assert)
   %i[idle run].each do |state|
-    PlayerTests.test(args, assert) do
+    PlayerTests.test(args) do
       with state: state, position: { x: 0, y: 0 }
 
       input jump: true
@@ -156,7 +156,7 @@ end
 
 def test_player_should_move_up_several_ticks_after_jumping(args, assert)
   %i[idle run].each do |state|
-    PlayerTests.test(args, assert) do
+    PlayerTests.test(args) do
       with state: state
       input jump: true
 
@@ -176,7 +176,7 @@ end
 
 def test_player_should_eventually_move_down_after_jumping(args, assert)
   %i[idle run].each do |state|
-    PlayerTests.test(args, assert) do
+    PlayerTests.test(args) do
       with state: state
       input jump: true
 
@@ -195,7 +195,7 @@ end
 
 def test_player_should_only_fall_until_the_floor(args, assert)
   %i[idle run].each do |state|
-    PlayerTests.test(args, assert) do
+    PlayerTests.test(args) do
       with state: state
       input jump: true
 
@@ -218,7 +218,7 @@ end
 
 def test_player_should_not_be_able_to_jump_again_without_releasing_the_jump_button(args, assert)
   %i[idle run].each do |state|
-    PlayerTests.test(args, assert) do
+    PlayerTests.test(args) do
       with state: state
       input jump: true
       no_input # Releasing jump button mid-air doesn't count as releasing
@@ -254,7 +254,7 @@ def test_player_should_jump_higher_when_holding_the_jump_button(args, assert)
     max_height_without_holding_the_button = 0
     max_height_with_holding_the_button = 0
 
-    PlayerTests.test(args, assert) do
+    PlayerTests.test(args) do
       with state: state
       input jump: true
 
@@ -267,7 +267,7 @@ def test_player_should_jump_higher_when_holding_the_jump_button(args, assert)
       end
     end
 
-    PlayerTests.test(args, assert) do
+    PlayerTests.test(args) do
       with state: state
       input jump: true
 
@@ -292,7 +292,7 @@ def test_player_should_not_fall_slower_when_holding_the_jump_button(args, assert
     y_after_holding_button_when_falling = 0
     y_after_just_falling = 0
 
-    PlayerTests.test(args, assert) do
+    PlayerTests.test(args) do
       with state: state
       input jump: true
 
@@ -309,7 +309,7 @@ def test_player_should_not_fall_slower_when_holding_the_jump_button(args, assert
       y_after_holding_button_when_falling = player[:position][:y]
     end
 
-    PlayerTests.test(args, assert) do
+    PlayerTests.test(args) do
       with state: state
       input jump: true
 
@@ -334,7 +334,7 @@ def test_player_should_not_fall_slower_when_holding_the_jump_button(args, assert
 end
 
 def test_player_should_have_maximum_falling_speed(args, assert)
-  PlayerTests.test(args, assert) do
+  PlayerTests.test(args) do
     with state: :jump, position: { x: 0, y: 50 }
     last_y_velocity = player[:y_velocity]
 
@@ -355,7 +355,7 @@ def test_player_should_have_maximum_falling_speed(args, assert)
 end
 
 def test_player_should_fall_until_collider(args, assert)
-  PlayerTests.test(args, assert) do
+  PlayerTests.test(args) do
     with state: :jump, position: { x: 0, y: 50 }
 
     collider_at x: -10, y: 20, w: 20, h: 5
@@ -374,7 +374,7 @@ def test_player_should_fall_until_collider(args, assert)
 end
 
 def test_player_should_not_walk_through_colliders(args, assert)
-  PlayerTests.test(args, assert) do
+  PlayerTests.test(args) do
     with state: :idle, position: { x: 0, y: 0 }
 
     collider_at x: 20, y: 0, w: 10, h: 10
@@ -396,8 +396,8 @@ end
 
 module PlayerTests
   class << self
-    def test(args, assert, &block)
-      TestHelpers::PlayerTestDSL.new(args, assert).instance_eval(&block)
+    def test(args, &block)
+      TestHelpers::PlayerTestDSL.new(args).instance_eval(&block)
     end
   end
 end

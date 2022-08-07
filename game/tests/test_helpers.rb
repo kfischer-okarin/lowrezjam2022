@@ -27,12 +27,11 @@ module TestHelpers
   class PlayerTestDSL < TestDSL
     attr_reader :player, :last_input_actions
 
-    def initialize(args, assert)
-      super(args)
+    def initialize(args)
+      super
       @args.state.colliders = [
         { collider: { x: -1000, y: -5, w: 2000, h: 5 } }
       ]
-      @assert = assert
       @player = Player.build
       @initial_attributes = nil
     end
