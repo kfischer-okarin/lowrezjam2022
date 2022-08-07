@@ -140,6 +140,38 @@ def test_camera_should_not_move_too_suddenly(args, assert)
   end
 end
 
+def test_camera_should_clamp(args, assert)
+  [
+    {
+      player_position: { x: CAMERA_MIN_X - 100, y: CAMERA_MIN_Y - 100 },
+      final_camera_position: { x: CAMERA_MIN_X, y: CAMERA_MIN_Y }
+    },
+    {
+      player_position: { x: CAMERA_MAX_X + 100, y: CAMERA_MAX_Y + 100 },
+      final_camera_position: { x: CAMERA_MAX_X, y: CAMERA_MAX_Y }
+    }
+  ].each do |test_case|
+    CameraTests.test(args) do
+      player[:position] = test_case[:player_position]
+
+      safe_loop "Expected camera to stop but it didn't" do
+        position_before = camera[:position].dup
+
+        update_camera
+
+        break if position_before == camera[:position]
+      end
+
+      assert.equal! camera[:position],
+                    test_case[:final_camera_position],
+                    "Expected camera to end at position #{test_case[:final_camera_position]} " \
+                    "but it ended at #{camera[:position]}"
+    end
+  end
+end
+
+# test_camera_should_clamp
+
 module CameraTests
   class << self
     def test(args, &block)

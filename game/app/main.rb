@@ -12,6 +12,9 @@ require 'app/resources.rb'
 SCREEN_W = 64
 SCREEN_H = 64
 
+STAGE_W = 200
+STAGE_H = 200
+
 PLAYER_RUN_SPEED = 1
 PLAYER_JUMP_SPEED = 2
 PLAYER_JUMP_ACCELERATION = 0.08
@@ -23,6 +26,10 @@ CAMERA_FOLLOW_X_OFFSET = {
   left: -44
 }.freeze
 CAMERA_FOLLOW_Y_OFFSET = -5
+CAMERA_MIN_X = 0
+CAMERA_MAX_X = STAGE_W - SCREEN_W
+CAMERA_MIN_Y = -5
+CAMERA_MAX_Y = STAGE_H - SCREEN_H
 
 def tick(args)
   state = args.state

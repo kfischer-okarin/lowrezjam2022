@@ -14,22 +14,32 @@ module Camera
     end
 
     def follow_player!(camera, player, immediately: false)
-      x_offset = CAMERA_FOLLOW_X_OFFSET[player[:face_direction]]
-      camera[:target_position] = {
-        x: player[:position][:x] + x_offset,
-        y: player[:position][:y] + CAMERA_FOLLOW_Y_OFFSET
-      }
-      if immediately
-        camera[:position] = camera[:target_position]
-        return
-      end
-      dx = camera[:target_position][:x] - camera[:position][:x]
-      camera[:position][:y] = camera[:target_position][:y]
-      camera[:movement][:x] += smooth_movement_by dx
-      move(camera, :x)
+      camera[:target_position] = calc_target_position(player)
+      move_to_target_position!(camera, immediately: immediately)
     end
 
     private
+
+    def calc_target_position(player)
+      x_offset = CAMERA_FOLLOW_X_OFFSET[player[:face_direction]]
+      {
+        x: (player[:position][:x] + x_offset).clamp(CAMERA_MIN_X, CAMERA_MAX_X),
+        y: (player[:position][:y] + CAMERA_FOLLOW_Y_OFFSET).clamp(CAMERA_MIN_Y, CAMERA_MAX_Y)
+      }
+    end
+
+    def move_to_target_position!(camera, immediately:)
+      target_position = camera[:target_position]
+      if immediately
+        camera[:position] = target_position
+        return
+      end
+
+      dx = target_position[:x] - camera[:position][:x]
+      camera[:position][:y] = target_position[:y]
+      camera[:movement][:x] += smooth_movement_by dx
+      move(camera, :x)
+    end
 
     def smooth_movement_by(offset)
       [
