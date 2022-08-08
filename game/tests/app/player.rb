@@ -88,6 +88,8 @@ def test_player_falling(args, assert)
       input move: :right
 
       break if player[:position][:y] < y_before_tick
+
+      assert.equal! player[:state], :run
     end
 
     assert.equal! player[:state], :jump

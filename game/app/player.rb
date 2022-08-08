@@ -20,6 +20,7 @@ module Player
       update_movement(player, input_actions)
       movement_result = Movement.apply!(player, state.colliders)
       land(player) if movement_result[:stopped_falling]
+      start_falling(player) if movement_result[:position_change][:y].negative?
     end
 
     private
@@ -34,15 +35,18 @@ module Player
         player[:state] = :idle unless input_actions[:move]
         start_jump(player) if input_actions[:jump] && player[:can_jump]
         player[:can_jump] = true unless input_actions[:jump]
-        player[:state] = :jump if player[:y_velocity].negative?
       when :jump
         player[:y_velocity] += PLAYER_JUMP_ACCELERATION if input_actions[:jump] && player[:y_velocity].positive?
       end
     end
 
     def start_jump(player)
-      player[:state] = :jump
+      start_falling(player)
       player[:y_velocity] = PLAYER_JUMP_SPEED
+    end
+
+    def start_falling(player)
+      player[:state] = :jump
       player[:can_jump] = false
     end
 

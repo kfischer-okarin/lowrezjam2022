@@ -2,10 +2,14 @@ module Movement
   class << self
     def apply!(entity, colliders)
       apply_gravity(entity)
-      move(entity, :x, colliders: colliders)
-      y_collision = move(entity, :y, colliders: colliders)
+      x_movement = move(entity, :x, colliders: colliders)
+      y_movement = move(entity, :y, colliders: colliders)
       {
-        stopped_falling: stop_falling(entity, y_collision)
+        stopped_falling: stop_falling(entity, y_movement[:collided_with]),
+        position_change: {
+          x: x_movement[:change],
+          y: y_movement[:change]
+        }
       }
     end
 
@@ -39,10 +43,14 @@ module Movement
         end
       end
 
+      change = next_position[dimension] - entity[:position][dimension]
       entity[:position] = next_position
       entity[:collider] = entity_at_next_position[:collider]
       entity[:movement][dimension] = abs_movement * sign
-      collided_with
+      {
+        collided_with: collided_with,
+        change: change
+      }
     end
 
     def update_collider(entity)
