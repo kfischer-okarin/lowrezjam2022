@@ -414,6 +414,26 @@ def test_player_should_not_walk_through_colliders(args, assert)
   end
 end
 
+def test_player_should_not_be_able_to_jump_through_colliders_from_below(args, assert)
+  PlayerTests.test(args) do
+    with state: :idle, position: { x: 20, y: 0 }
+
+    collider_at x: 10, y: 30, w: 20, h: 10
+
+    safe_loop "Expected #{player_description} to land, but he didn't" do
+      input jump: true
+
+      break if player[:position][:y].zero?
+
+      next unless player[:collider].top > 30
+
+      raise "Player passed through the collider: Current position #{player[:position]}"
+    end
+
+    assert.ok!
+  end
+end
+
 module PlayerTests
   class << self
     def test(args, &block)

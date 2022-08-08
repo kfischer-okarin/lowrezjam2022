@@ -19,7 +19,7 @@ module Player
       update_face_direction(player, input_actions)
       update_movement(player, input_actions)
       movement_result = Movement.apply!(player, state.colliders)
-      land(player) if movement_result[:stopped_falling]
+      land(player, movement_result[:collisions][:down]) if movement_result[:collisions][:down]
       start_falling(player) if movement_result[:position_change][:y].negative?
     end
 
@@ -64,10 +64,12 @@ module Player
       end
     end
 
-    def land(player)
+    def land(player, collider)
       return unless player[:state] == :jump
 
       player[:state] = :idle
+      player[:position][:y] = collider[:collider].top
+      player[:y_velocity] = 0
     end
   end
 end

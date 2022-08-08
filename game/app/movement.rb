@@ -4,8 +4,9 @@ module Movement
       apply_gravity(entity)
       x_movement = move(entity, :x, colliders: colliders)
       y_movement = move(entity, :y, colliders: colliders)
+
       {
-        stopped_falling: stop_falling(entity, y_movement[:collided_with]),
+        collisions: x_movement[:collisions].merge(y_movement[:collisions]),
         position_change: {
           x: x_movement[:change],
           y: y_movement[:change]
@@ -47,8 +48,11 @@ module Movement
       entity[:position] = next_position
       entity[:collider] = entity_at_next_position[:collider]
       entity[:movement][dimension] = abs_movement * sign
+
+      collisions = {}
+      collisions[direction(dimension, sign)] = collided_with if collided_with
       {
-        collided_with: collided_with,
+        collisions: collisions,
         change: change
       }
     end
@@ -69,12 +73,11 @@ module Movement
       }
     end
 
-    def stop_falling(entity, y_collision)
-      return false unless y_collision
-
-      entity[:position][:y] = y_collision[:collider].top
-      entity[:y_velocity] = 0
-      true
+    def direction(dimension, sign)
+      case dimension
+      when :x then sign == 1 ? :right : :left
+      when :y then sign == 1 ? :up : :down
+      end
     end
   end
 end
