@@ -434,6 +434,26 @@ def test_player_should_not_be_able_to_jump_through_colliders_from_below(args, as
   end
 end
 
+def test_player_should_immediately_fall_when_hitting_colliders_from_below(args, assert)
+  PlayerTests.test(args) do
+    with state: :idle, position: { x: 20, y: 0 }
+
+    collider_at x: 10, y: 30, w: 20, h: 10
+
+    safe_loop "Expected #{player_description} to hit the collider, but he didn't" do
+      input jump: true
+
+      break if player[:collider].top == 30
+    end
+
+    no_input
+
+    assert.true! player[:y_velocity].negative?,
+                  "Expected #{player_description} to fall immediately after hitting the collider, " \
+                  "but his y position was #{player[:position][:y]}"
+  end
+end
+
 module PlayerTests
   class << self
     def test(args, &block)

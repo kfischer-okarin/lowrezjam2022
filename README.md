@@ -3,7 +3,7 @@
 ## TODO
 - [x] Stage - old abandoned metal warehouse
 - [x] Camera movement
-- [ ] Hit platform with head
+- [x] Hit platform with head
 - [x] Falling state when falling
 - [ ] Improve camera y movement
 

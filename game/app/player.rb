@@ -21,6 +21,7 @@ module Player
       movement_result = Movement.apply!(player, state.colliders)
       land(player, movement_result[:collisions][:down]) if movement_result[:collisions][:down]
       start_falling(player) if movement_result[:position_change][:y].negative?
+      stop_vertical_movement(player) if movement_result[:collisions][:up]
     end
 
     private
@@ -69,7 +70,12 @@ module Player
 
       player[:state] = :idle
       player[:position][:y] = collider[:collider].top
+      stop_vertical_movement(player)
+    end
+
+    def stop_vertical_movement(player)
       player[:y_velocity] = 0
+      player[:movement][:y] = 0
     end
   end
 end
