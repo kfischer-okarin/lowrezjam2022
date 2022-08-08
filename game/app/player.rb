@@ -34,6 +34,7 @@ module Player
         player[:state] = :idle unless input_actions[:move]
         start_jump(player) if input_actions[:jump] && player[:can_jump]
         player[:can_jump] = true unless input_actions[:jump]
+        player[:state] = :jump if player[:y_velocity].negative?
       when :jump
         player[:y_velocity] += PLAYER_JUMP_ACCELERATION if input_actions[:jump] && player[:y_velocity].positive?
       end

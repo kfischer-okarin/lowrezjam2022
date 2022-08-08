@@ -76,6 +76,24 @@ def test_player_stop_jumping(args, assert)
   end
 end
 
+def test_player_falling(args, assert)
+  PlayerTests.test(args) do
+    with state: :idle, position: { x: 0, y: 20 }
+
+    collider_at x: -10, y: 15, w: 20, h: 5
+
+    safe_loop "Expected #{player_description} to start falling, but he didn't" do
+      y_before_tick = player[:position][:y]
+
+      input move: :right
+
+      break if player[:position][:y] < y_before_tick
+    end
+
+    assert.equal! player[:state], :jump
+  end
+end
+
 def test_player_face_direction(args, assert)
   %i[left right].each do |initial_face_direction|
     %i[left right].each do |move_direction|
