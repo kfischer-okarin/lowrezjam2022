@@ -2,8 +2,8 @@ module Movement
   class << self
     def apply!(entity, colliders)
       apply_gravity(entity)
-      x_movement = move(entity, :x, colliders: colliders)
-      y_movement = move(entity, :y, colliders: colliders)
+      x_movement = move_with_collision(entity, :x, colliders: colliders)
+      y_movement = move_with_collision(entity, :y, colliders: colliders)
 
       {
         collisions: x_movement[:collisions].merge(y_movement[:collisions]),
@@ -14,6 +14,19 @@ module Movement
       }
     end
 
+    def move(entity, dimension)
+      abs_movement = entity[:movement][dimension].abs
+      sign = entity[:movement][dimension].sign
+      position = entity[:position]
+
+      while abs_movement >= 1
+        abs_movement -= 1
+        position[dimension] += sign
+      end
+
+      entity[:movement][dimension] = abs_movement * sign
+    end
+
     private
 
     def apply_gravity(entity)
@@ -21,7 +34,7 @@ module Movement
       entity[:y_velocity] = [entity[:y_velocity] - GRAVITY, -MAX_FALL_VELOCITY].max
     end
 
-    def move(entity, dimension, colliders:)
+    def move_with_collision(entity, dimension, colliders:)
       abs_movement = entity[:movement][dimension].abs
       sign = entity[:movement][dimension].sign
       entity_at_next_position = {

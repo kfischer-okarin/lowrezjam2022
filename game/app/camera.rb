@@ -38,7 +38,7 @@ module Camera
       dx = target_position[:x] - camera[:position][:x]
       camera[:position][:y] = target_position[:y]
       camera[:movement][:x] += smooth_movement_by dx
-      move(camera, :x)
+      Movement.move(camera, :x)
     end
 
     def smooth_movement_by(offset)
@@ -46,19 +46,6 @@ module Camera
         1 + (offset.abs / 25),
         offset.abs
       ].min * offset.sign
-    end
-
-    def move(camera, dimension)
-      abs_movement = camera[:movement][dimension].abs
-      sign = camera[:movement][dimension].sign
-      position = camera[:position]
-
-      while abs_movement >= 1
-        abs_movement -= 1
-        position[dimension] += sign
-      end
-
-      camera[:movement][dimension] = abs_movement * sign
     end
   end
 end
