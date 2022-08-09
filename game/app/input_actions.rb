@@ -10,9 +10,8 @@ module InputActions
           actions[:move] = :right
         end
 
-        if keyboard.key_held.space
-          actions[:jump] = true
-        end
+        actions[:jump] = true if keyboard.key_held.space
+        actions[:fire] = true if keyboard.key_held.x
       end
     end
   end
