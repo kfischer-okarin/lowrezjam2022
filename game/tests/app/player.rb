@@ -149,7 +149,7 @@ def test_player_move_right(args, assert)
     PlayerTests.test(args) do
       with state: state, position: { x: 0, y: 0 }
 
-      input move: :right
+      10.times { input move: :right }
 
       assert.true! player[:position][:x] > 0,
                    "Expected #{last_input_actions} to change #{player_description} " \
@@ -163,7 +163,7 @@ def test_player_move_left(args, assert)
     PlayerTests.test(args) do
       with state: state, position: { x: 0, y: 0 }
 
-      input move: :left
+      10.times { input move: :left }
 
       assert.true! player[:position][:x] < 0,
                    "Expected #{last_input_actions} to change #{player_description} " \
@@ -177,7 +177,7 @@ def test_player_walk_backwards_while_firing_right(args, assert)
     PlayerTests.test(args) do
       with state: state, position: { x: 0, y: 0 }, face_direction: :right, firing: true
 
-      input move: :left, fire: true
+      10.times { input move: :left, fire: true }
 
       assert.true! player[:position][:x] < 0,
                    "Expected #{last_input_actions} to change #{player_description} " \
@@ -191,7 +191,7 @@ def test_player_walk_backwards_while_firing_left(args, assert)
     PlayerTests.test(args) do
       with state: state, position: { x: 0, y: 0 }, face_direction: :left, firing: true
 
-      input move: :right, fire: true
+      10.times { input move: :right, fire: true }
 
       assert.true! player[:position][:x] > 0,
                    "Expected #{last_input_actions} to change #{player_description} " \
