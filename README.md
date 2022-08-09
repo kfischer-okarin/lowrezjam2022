@@ -5,10 +5,14 @@
 - [x] Camera movement
 - [x] Hit platform with head
 - [x] Falling state when falling
-- [ ] Improve camera y movement
-
-- [ ] Flamethrower
+- [x] Flamethrower
 - [ ] Slime enemy
+- [ ] Flamethrower damage
+- [ ] Slime damage
+- [ ] Win/Lose state
+- [ ] Fire particles wall collision
+- [ ] Improve camera y movement
+- [ ] Adjust fire position
 - [ ] Slime escalation ideas
   - Bigger, faster
   - Shooting projectiles

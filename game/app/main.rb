@@ -19,6 +19,7 @@ PLAYER_RUN_SPEED = 1
 PLAYER_FIRING_SLOWDOWN = 0.4
 PLAYER_JUMP_SPEED = 2.2
 PLAYER_JUMP_ACCELERATION = 0.08
+FIRE_PARTICLE_INITIAL_SPEED = 1.8
 GRAVITY = 0.15
 MAX_FALL_VELOCITY = 2
 
@@ -53,6 +54,8 @@ def setup(state)
     animation_state: nil
   }
   state.colliders = get_stage_bounds + load_colliders
+
+  state.fire_particles = []
 end
 
 def get_stage_bounds
@@ -129,8 +132,17 @@ def render(state, outputs)
 
   screen.primitives << state.rendered_player[:sprite]
 
+  state.fire_particles.each do |particle|
+    particle[:x] = particle[:position][:x]
+    particle[:y] = particle[:position][:y]
+    Camera.apply! camera, particle
+  end
+
+  screen.primitives << state.fire_particles
+
   outputs.background_color = [0, 0, 0]
   outputs.primitives << { x: 288, y: 8, w: 704, h: 704, path: :screen }.sprite!
+  outputs.primitives << { x: 20, y: 720, text: $gtk.current_framerate.to_i.to_s, r: 255, g: 255, b: 255 }.label!
 end
 
 def update_animation(render_state)
@@ -148,8 +160,105 @@ def update_animation(render_state)
 end
 
 def update(state)
-  Player.update!(state.player, state)
-  Camera.follow_player! state.camera, state.player
+  player = state.player
+  Player.update!(player, state)
+  handle_firethrower(player, state.fire_particles)
+  Camera.follow_player! state.camera, player
+end
+
+def handle_firethrower(player, fire_particles)
+  fire_particles.reject! { |particle| particle[:lifetime] >= 40 }
+
+  fire_particles.each do |particle|
+    update_fire_particle particle
+  end
+
+  if player[:firing]
+    x_offset = player[:face_direction] == :left ? -8 : 7
+     2.times do |i|
+      fire_particles << {
+        position: {
+          x: player[:position][:x] + x_offset,
+          y: player[:position][:y] + 9 - i
+        },
+        x: 0,
+        y: 0,
+        w: 2,
+        h: 2,
+        path: :pixel,
+        r: 255, g: 0, b: 0,
+        lifetime: 0,
+        movement: { x: 0, y: 0 },
+        velocity: {
+          x: player[:face_direction] == :left ? -FIRE_PARTICLE_INITIAL_SPEED : FIRE_PARTICLE_INITIAL_SPEED,
+          y: 0
+        },
+        rotation_sign: player[:face_direction] == :left ? -1 : 1
+      }.tap { |particle| rotate_particle_velocity_by particle, -0.4 }
+    end
+  end
+end
+
+FIRE_WHITE = 0
+FIRE_YELLOW = 5
+FIRE_RED = 13
+FIRE_DARK_RED = 18
+FIRE_SMOKE = 25
+
+def update_fire_particle(particle)
+  particle[:movement][:x] += particle[:velocity][:x]
+  particle[:movement][:y] += particle[:velocity][:y]
+  Movement.move particle, :x
+  Movement.move particle, :y
+
+  case particle[:lifetime]
+  when FIRE_WHITE
+    particle.merge! r: 0xff, g: 0xff, b: 0xff
+  when FIRE_YELLOW
+    particle[:velocity][:x] *= 0.7
+    particle[:velocity][:y] *= 0.7
+    particle.merge! r: 0xfb, g: 0xf2, b: 0x36
+  when FIRE_RED
+    particle[:velocity][:x] *= 0.8
+    particle[:velocity][:y] *= 0.8
+    particle.merge! r: 0xd9, g: 0x57, b: 0x63
+  when FIRE_DARK_RED
+    particle[:velocity][:x] *= 0.5
+    particle[:velocity][:y] *= 0.5
+    particle.merge! r: 0xac, g: 0x32, b: 0x32
+  end
+
+  case particle[:lifetime]
+  when FIRE_WHITE
+    rotate_particle_velocity_by particle, (rand * 0.6 - 0.2)
+  when FIRE_YELLOW..FIRE_DARK_RED
+    rotate_particle_velocity_by particle, (rand * 0.4 - 0.1)
+  when FIRE_DARK_RED..FIRE_SMOKE
+    if (!particle[:r] == 0x45 && rand < 0.2) || particle[:lifetime] == FIRE_SMOKE
+      particle[:velocity] = { x: 0, y: 0.5 }
+      rotate_particle_velocity_by particle, (rand * 0.8 - 0.4)
+      particle[:w] = 3
+      particle[:h] = 3
+      particle.merge! r: 0x45, g: 0x28, b: 0x3c
+    end
+  end
+
+  particle[:lifetime] += 1
+end
+
+def rotate_particle_velocity_by(particle, angle)
+  rotate_by particle[:velocity], particle[:rotation_sign] * angle
+end
+
+def rotate_by(vector, angle)
+  length = Math.sqrt(vector[:x] ** 2 + vector[:y] ** 2)
+  new_angle = vector_angle(vector) + angle
+  vector[:x] = length * Math.cos(new_angle)
+  vector[:y] = length * Math.sin(new_angle)
+end
+
+def vector_angle(vector)
+  Math.atan2 vector[:y], vector[:x]
 end
 
 $gtk.reset
