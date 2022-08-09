@@ -200,6 +200,33 @@ def test_player_walk_backwards_while_firing_left(args, assert)
   end
 end
 
+def test_player_move_slower_while_firing(args, assert)
+  distance_while_firing = nil
+  distance_while_not_firing = nil
+
+  PlayerTests.test(args) do
+    with firing: true
+
+    x_before = player[:position][:x]
+
+    10.times { input move: :right, fire: true }
+
+    distance_while_firing = player[:position][:x] - x_before
+  end
+
+  PlayerTests.test(args) do
+    x_before = player[:position][:x]
+
+    10.times { input move: :right }
+
+    distance_while_not_firing = player[:position][:x] - x_before
+  end
+
+  assert.true! distance_while_firing < distance_while_not_firing,
+               "Expected player to move slower while firing but he didn't " \
+               "(while firing: #{distance_while_firing}, while not firing: #{distance_while_not_firing})"
+end
+
 def test_player_movement_stop_moving(args, assert)
   %i[run jump].each do |state|
     PlayerTests.test(args) do

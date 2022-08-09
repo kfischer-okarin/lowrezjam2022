@@ -65,7 +65,9 @@ module Player
 
     def update_movement(player, input_actions)
       if input_actions[:move]
-        player[:movement][:x] = input_actions[:move] == :right ? PLAYER_RUN_SPEED : -PLAYER_RUN_SPEED
+        movement = input_actions[:move] == :right ? PLAYER_RUN_SPEED : -PLAYER_RUN_SPEED
+        movement *= PLAYER_FIRING_SLOWDOWN if player[:firing]
+        player[:movement][:x] += movement
       else
         player[:movement][:x] = 0
       end
