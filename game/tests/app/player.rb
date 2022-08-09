@@ -76,6 +76,16 @@ def test_player_stop_jumping(args, assert)
   end
 end
 
+def test_player_firing(args, assert)
+  PlayerTests.test(args) do
+    with firing: false
+
+    input fire: true
+
+    assert.true! player[:firing]
+  end
+end
+
 def test_player_falling(args, assert)
   PlayerTests.test(args) do
     with state: :idle, position: { x: 0, y: 20 }
@@ -115,6 +125,25 @@ def test_player_face_direction(args, assert)
   end
 end
 
+def test_player_dont_change_face_direction_when_firing(args, assert)
+  %i[left right].each do |initial_face_direction|
+    %i[left right].each do |move_direction|
+      %i[idle run jump].each do |state|
+        PlayerTests.test(args) do
+          with state: state, face_direction: initial_face_direction, firing: true
+
+          input move: move_direction, fire: true
+
+          assert.equal! player[:face_direction],
+                        initial_face_direction,
+                        "Expected #{last_input_actions} to not to change face direction of " \
+                        "#{player_description} but it was changed to #{player[:face_direction]}"
+        end
+      end
+    end
+  end
+end
+
 def test_player_move_right(args, assert)
   %i[idle run jump].each do |state|
     PlayerTests.test(args) do
@@ -139,6 +168,34 @@ def test_player_move_left(args, assert)
       assert.true! player[:position][:x] < 0,
                    "Expected #{last_input_actions} to change #{player_description} " \
                    "to have a x position < 0 but it was #{player[:position]}"
+    end
+  end
+end
+
+def test_player_walk_backwards_while_firing_right(args, assert)
+  %i[idle run jump].each do |state|
+    PlayerTests.test(args) do
+      with state: state, position: { x: 0, y: 0 }, face_direction: :right, firing: true
+
+      input move: :left, fire: true
+
+      assert.true! player[:position][:x] < 0,
+                   "Expected #{last_input_actions} to change #{player_description} " \
+                   "to have a x position < 0 but it was #{player[:position]}"
+    end
+  end
+end
+
+def test_player_walk_backwards_while_firing_left(args, assert)
+  %i[idle run jump].each do |state|
+    PlayerTests.test(args) do
+      with state: state, position: { x: 0, y: 0 }, face_direction: :left, firing: true
+
+      input move: :right, fire: true
+
+      assert.true! player[:position][:x] > 0,
+                   "Expected #{last_input_actions} to change #{player_description} " \
+                   "to have a x position > 0 but it was #{player[:position]}"
     end
   end
 end

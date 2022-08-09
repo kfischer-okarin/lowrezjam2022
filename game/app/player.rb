@@ -8,6 +8,7 @@ module Player
         collider: {},
         y_velocity: 0,
         state: :idle,
+        firing: false,
         face_direction: :right,
         can_jump: true
       }
@@ -16,6 +17,7 @@ module Player
     def update!(player, state)
       input_actions = state.input_actions
       update_state(player, input_actions)
+      update_firing(player, input_actions)
       update_face_direction(player, input_actions)
       update_movement(player, input_actions)
       movement_result = Movement.apply!(player, state.colliders)
@@ -51,15 +53,19 @@ module Player
       player[:can_jump] = false
     end
 
+    def update_firing(player, input_actions)
+      player[:firing] = !!input_actions[:fire]
+    end
+
     def update_face_direction(player, input_actions)
-      if input_actions[:move]
+      if input_actions[:move] && !player[:firing]
         player[:face_direction] = input_actions[:move]
       end
     end
 
     def update_movement(player, input_actions)
       if input_actions[:move]
-        player[:movement][:x] = player[:face_direction] == :right ? PLAYER_RUN_SPEED : -PLAYER_RUN_SPEED
+        player[:movement][:x] = input_actions[:move] == :right ? PLAYER_RUN_SPEED : -PLAYER_RUN_SPEED
       else
         player[:movement][:x] = 0
       end
