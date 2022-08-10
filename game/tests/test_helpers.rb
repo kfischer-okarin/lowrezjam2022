@@ -122,17 +122,28 @@ module TestHelpers
       super
 
       @particle = FireParticle.build x: 0, y: 0, direction: :right
+      @particle_direction = :right
+    end
+
+    def particle_direction(direction)
+      @particle_direction = direction
     end
 
     def record_every_tick(recorded_attributes, particle_count:)
+      record_value = case recorded_attributes
+                     when Array
+                       ->(particle) { particle.slice(*recorded_attributes).transform_values(&:dup) }
+                     when Symbol
+                        ->(particle) { particle[recorded_attributes].dup }
+                     end
       [].tap { |results|
-        attributes = { x: 0, y: 0, direction: :right }
+        attributes = { x: 0, y: 0, direction: @particle_direction }
         particle_count.times do
           @particle = FireParticle.build attributes
           result = []
           repeat_until_death do
             update
-            result << particle.slice(*recorded_attributes)
+            result << record_value.call(@particle)
           end
           results << result
         end
@@ -157,6 +168,10 @@ module TestHelpers
         block.call
         break if particle[:dead]
       end
+    end
+
+    def particles_description
+      "particles going #{@particle_direction}"
     end
   end
 end
