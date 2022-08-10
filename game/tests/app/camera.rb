@@ -170,8 +170,6 @@ def test_camera_should_clamp(args, assert)
   end
 end
 
-# test_camera_should_clamp
-
 module CameraTests
   class << self
     def test(args, &block)
