@@ -4,6 +4,8 @@ require 'lib/extra_keys.rb'
 require 'lib/resources.rb'
 
 require 'app/camera.rb'
+require 'app/colors.rb'
+require 'app/fire_particle.rb'
 require 'app/input_actions.rb'
 require 'app/movement.rb'
 require 'app/player.rb'
@@ -53,6 +55,8 @@ def setup(state)
     animation_state: nil
   }
   state.colliders = get_stage_bounds + load_colliders
+
+  state.fire_particles = []
 end
 
 def get_stage_bounds
@@ -129,6 +133,14 @@ def render(state, outputs)
 
   screen.primitives << state.rendered_player[:sprite]
 
+  state.fire_particles.each do |particle|
+    particle[:x] = particle[:position][:x]
+    particle[:y] = particle[:position][:y]
+    Camera.apply! camera, particle
+  end
+
+  screen.primitives << state.fire_particles
+
   outputs.background_color = [0, 0, 0]
   outputs.primitives << { x: 288, y: 8, w: 704, h: 704, path: :screen }.sprite!
   return if $gtk.production
@@ -151,8 +163,29 @@ def update_animation(render_state)
 end
 
 def update(state)
-  Player.update!(state.player, state)
-  Camera.follow_player! state.camera, state.player
+  player = state.player
+  Player.update!(player, state)
+  handle_firethrower(player, state.fire_particles)
+  Camera.follow_player! state.camera, player
+end
+
+def handle_firethrower(player, fire_particles)
+  fire_particles.reject! { |particle| particle[:dead] }
+
+  fire_particles.each do |particle|
+    FireParticle.update! particle
+  end
+
+  return unless player[:firing]
+
+  x_offset = player[:face_direction] == :left ? -8 : 7
+  2.times do |i|
+    fire_particles << FireParticle.build(
+      x: player[:position][:x] + x_offset,
+      y: player[:position][:y] + 9 - i,
+      direction: player[:face_direction]
+    )
+  end
 end
 
 $gtk.reset

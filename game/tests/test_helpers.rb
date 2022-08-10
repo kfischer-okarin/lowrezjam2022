@@ -114,4 +114,26 @@ module TestHelpers
       @player[:position][:x] += direction == :right ? PLAYER_RUN_SPEED : -PLAYER_RUN_SPEED
     end
   end
+
+  class FireParticleDSL < DSL::Base
+    attr_reader :particle
+
+    def initialize(args)
+      super
+
+      @particle = FireParticle.build x: 0, y: 0, direction: :right
+    end
+
+    def update
+      FireParticle.update! @particle
+      next_tick
+    end
+
+    def repeat_until_death(&block)
+      safe_loop "Expected particle to die but it didn't" do
+        block.call
+        break if particle[:dead]
+      end
+    end
+  end
 end
