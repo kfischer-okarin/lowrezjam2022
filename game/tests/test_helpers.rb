@@ -124,6 +124,29 @@ module TestHelpers
       @particle = FireParticle.build x: 0, y: 0, direction: :right
     end
 
+    def record_every_tick(recorded_attributes, particle_count:)
+      [].tap { |results|
+        attributes = { x: 0, y: 0, direction: :right }
+        particle_count.times do
+          @particle = FireParticle.build attributes
+          result = []
+          repeat_until_death do
+            update
+            result << particle.slice(*recorded_attributes)
+          end
+          results << result
+        end
+      }
+    end
+
+    def calc_ratio(results, &condition)
+      true_count = 0
+      results.each do |result|
+        true_count += 1 if condition.call result
+      end
+      true_count.to_f * 100 / results.size
+    end
+
     def update
       FireParticle.update! @particle
       next_tick
