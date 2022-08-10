@@ -141,7 +141,7 @@ module TestHelpers
         particle_count.times do
           @particle = FireParticle.build attributes
           result = []
-          repeat_until_death do
+          repeat_until_gone do
             update
             result << record_value.call(@particle)
           end
@@ -163,10 +163,10 @@ module TestHelpers
       next_tick
     end
 
-    def repeat_until_death(&block)
+    def repeat_until_gone(&block)
       safe_loop "Expected particle to die but it didn't" do
         block.call
-        break if particle[:dead]
+        break if particle[:state] == :gone
       end
     end
 

@@ -58,6 +58,25 @@ def test_fire_particle_end_up_higher_than_started(args, assert)
   end
 end
 
+def test_fire_particle_should_not_go_too_high(args, assert)
+  %i[left right].each do |direction|
+    FireParticleTests.test(args) do
+      particle_direction direction
+
+      results = record_every_tick :position, particle_count: 100
+
+      not_too_high_ratio = calc_ratio results do |positions|
+        first_y = positions.first[:y]
+        positions.last[:y] - first_y < 20
+      end
+
+      assert.true! not_too_high_ratio >= 80,
+                  "Expected at least 80% of #{particles_description} to not move too high " \
+                  "but it was #{not_too_high_ratio}%"
+    end
+  end
+end
+
 def test_fire_particle_moving_right(args, assert)
   FireParticleTests.test(args) do
     particle_direction :right

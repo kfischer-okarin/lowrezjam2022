@@ -10,7 +10,7 @@ module FireParticle
         },
         rotation_sign: direction == :left ? -1 : 1,
         lifetime: 0,
-        dead: false
+        state: :fire
       }.sprite!(w: 2, h: 2, path: :pixel).tap { |particle|
         rotate_particle_velocity_by particle, -0.4
       }
@@ -19,6 +19,7 @@ module FireParticle
     def update!(particle)
       update_position particle
       update_state particle
+      update_speed particle
       update_direction particle
       particle[:lifetime] += 1
     end
@@ -42,10 +43,23 @@ module FireParticle
         particle.merge! Colors::DawnBringer32::BRIGHT_RED
       when RED_TICK
         particle.merge! Colors::DawnBringer32::RED
-      when DARK_BROWN_TICK
-        particle.merge! Colors::DawnBringer32::DARK_BROWN
+      when RED_TICK..DARK_BROWN_TICK
+        if particle[:state] != :smoke && (rand < 0.2 || particle[:lifetime] == DARK_BROWN_TICK)
+          turn_to_smoke particle
+        end
       when DEATH_TICK
-        particle[:dead] = true
+        particle[:state] = :gone
+      end
+    end
+
+    def update_speed(particle)
+      case particle[:lifetime]
+      when YELLOW_TICK
+        mult_vector! particle[:velocity], 0.7
+      when BRIGHT_RED_TICK
+        mult_vector! particle[:velocity], 0.8
+      when RED_TICK
+        mult_vector! particle[:velocity], 0.5
       end
     end
 
@@ -53,9 +67,18 @@ module FireParticle
       case particle[:lifetime]
       when WHITE_TICK
         rotate_particle_velocity_by particle, (rand * 0.6 - 0.2)
-      when YELLOW_TICK..RED_TICK
+      when YELLOW_TICK..BRIGHT_RED_TICK
         rotate_particle_velocity_by particle, (rand * 0.4 - 0.1)
       end
+    end
+
+    def turn_to_smoke(particle)
+      particle[:state] = :smoke
+      particle[:velocity] = { x: 0, y: 0.5 }
+      rotate_particle_velocity_by particle, (rand * 0.8 - 0.4)
+      particle[:w] = 3
+      particle[:h] = 3
+      particle.merge! Colors::DawnBringer32::DARK_BROWN
     end
 
     WHITE_TICK = 0
@@ -78,6 +101,11 @@ module FireParticle
 
     def vector_angle(vector)
       Math.atan2 vector[:y], vector[:x]
+    end
+
+    def mult_vector!(vector, factor)
+      vector[:x] *= factor
+      vector[:y] *= factor
     end
   end
 end

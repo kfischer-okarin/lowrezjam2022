@@ -172,7 +172,7 @@ def update(state)
 end
 
 def handle_firethrower(player, fire_particles)
-  fire_particles.reject! { |particle| particle[:dead] }
+  fire_particles.reject! { |particle| particle[:state] == :gone }
 
   fire_particles.each do |particle|
     FireParticle.update! particle
