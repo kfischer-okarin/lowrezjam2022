@@ -144,9 +144,6 @@ def render(state, outputs)
 
   outputs.background_color = [0, 0, 0]
   outputs.primitives << { x: 288, y: 8, w: 704, h: 704, path: :screen }.sprite!
-  return if $gtk.production
-
-  outputs.primitives << { x: 20, y: 720, text: $gtk.current_framerate.to_i.to_s, r: 255, g: 255, b: 255 }.label!
 end
 
 def update_animation(render_state)

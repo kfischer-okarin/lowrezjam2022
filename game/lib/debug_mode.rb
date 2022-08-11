@@ -14,7 +14,7 @@ module DebugExtension
       @static_primitives = []
       @last_debug_y = 720
       @reset_handlers = []
-      @log_color = { r: 0, g: 0, b: 0 }
+      @log_color = { r: 255, g: 255, b: 255 }
     end
 
     def time_block_last_execute(name)
