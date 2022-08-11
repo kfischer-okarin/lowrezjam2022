@@ -48,6 +48,7 @@ def setup(state)
   state.camera = Camera.build
   state.player = Player.build
   state.player[:position][:x] = 20
+  Movement.update_collider state.player
   Camera.follow_player! state.camera, state.player, immediately: true
   state.rendered_player = build_render_state load_animations('character')
   state.rendered_slime = build_render_state load_animations('slime')

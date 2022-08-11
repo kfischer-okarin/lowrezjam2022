@@ -27,6 +27,16 @@ module Movement
       entity[:movement][dimension] = abs_movement * sign
     end
 
+    def update_collider(entity)
+      position = entity[:position]
+      collider_bounds = entity[:collider_bounds]
+      collider = entity[:collider]
+      collider[:x] = position[:x] + collider_bounds[:x]
+      collider[:y] = position[:y] + collider_bounds[:y]
+      collider[:w] = collider_bounds[:w]
+      collider[:h] = collider_bounds[:h]
+    end
+
     private
 
     def apply_gravity(entity)
@@ -68,16 +78,6 @@ module Movement
         collisions: collisions,
         change: change
       }
-    end
-
-    def update_collider(entity)
-      position = entity[:position]
-      collider_bounds = entity[:collider_bounds]
-      collider = entity[:collider]
-      collider[:x] = position[:x] + collider_bounds[:x]
-      collider[:y] = position[:y] + collider_bounds[:y]
-      collider[:w] = collider_bounds[:w]
-      collider[:h] = collider_bounds[:h]
     end
 
     def check_collision(entity, colliders)
