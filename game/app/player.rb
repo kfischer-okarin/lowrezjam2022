@@ -29,6 +29,7 @@ module Player
     def update_rendered_state!(player, rendered_state)
       rendered_state[:sprite].merge! player[:position]
       rendered_state[:sprite][:x] -= 8
+      rendered_state[:sprite][:x] += 2 if player[:face_direction] == :left
 
       rendered_state[:next_animation] = :"#{player[:state]}_#{player[:face_direction]}"
       update_animation rendered_state
