@@ -49,16 +49,20 @@ def setup(state)
   state.player = Player.build
   state.player[:position][:x] = 20
   Camera.follow_player! state.camera, state.player, immediately: true
-  state.rendered_player = {
-    animations: load_animations('character'),
+  state.rendered_player = build_render_state load_animations('character')
+  state.colliders = get_stage_bounds + load_colliders
+
+  state.fire_particles = []
+end
+
+def build_render_state(animations)
+  {
+    animations: animations,
     sprite: {}.sprite!,
     animation: nil,
     next_animation: nil,
     animation_state: nil
   }
-  state.colliders = get_stage_bounds + load_colliders
-
-  state.fire_particles = []
 end
 
 def get_stage_bounds
