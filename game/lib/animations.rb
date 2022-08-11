@@ -41,7 +41,12 @@ module Animations
         base: {
           flip_horizontally: false
         }.merge(base),
-        frames: frames
+        frames: frames.map { |frame|
+          {
+            duration: frame[:ticks],
+            values: frame.except(:ticks)
+          }
+        }
       }
     end
 
@@ -67,8 +72,7 @@ module Animations
 
     def apply!(primitive, animation_state:)
       frame = animation_state[:animation][:frames][animation_state[:frame_index]]
-      primitive.merge! frame
-      primitive.delete :ticks
+      primitive.merge! frame[:values]
     end
 
     def next_tick(animation_state)
@@ -77,7 +81,7 @@ module Animations
       frames = animation_state[:animation][:frames]
 
       animation_state[:ticks] += 1
-      if animation_state[:ticks] >= frames[animation_state[:frame_index]][:ticks]
+      if animation_state[:ticks] >= frames[animation_state[:frame_index]][:duration]
         animation_state[:ticks] = 0
 
         if animation_state[:frame_index] < frames.length - 1
