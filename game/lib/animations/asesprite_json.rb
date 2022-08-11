@@ -17,14 +17,12 @@ module Animations
         }
 
         {}.tap { |result|
-          tags = sprite_sheet_data.fetch(:meta).fetch(:frameTags).map { |frame_tag_data| frame_tag_data.fetch(:name) }
-          tags.each do |tag|
-            sorted_animation_frames = frames.select { |frame_data|
-              frame_data.fetch(:filename).start_with?("#{tag}-----") # avoid frames with same prefix
-            }.sort_by(&:filename)
-
+          sprite_sheet_data.fetch(:meta).fetch(:frameTags).each do |frame_tag_data|
+            tag = frame_tag_data.fetch(:name).to_sym
+            frame_range = frame_tag_data.fetch(:from)..frame_tag_data.fetch(:to)
             result[tag.to_sym] = Animations.build(
-              frames: sorted_animation_frames.map { |frame_data|
+              frames: frame_range.map { |frame_index|
+                frame_data = frames[frame_index]
                 frame = frame_data.fetch(:frame)
                 {
                   tile_x: frame[:x],
