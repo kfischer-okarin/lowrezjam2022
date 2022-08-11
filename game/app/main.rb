@@ -14,8 +14,8 @@ require 'app/resources.rb'
 SCREEN_W = 64
 SCREEN_H = 64
 
-STAGE_W = 240
-STAGE_H = 120
+STAGE_W = 246
+STAGE_H = 90
 
 PLAYER_RUN_SPEED = 1
 PLAYER_FIRING_SLOWDOWN = 0.4
@@ -70,9 +70,9 @@ end
 def get_stage_bounds
   [
     { collider: { x: 0, y: -5, w: STAGE_W, h: 5 } },
-    { collider: { x: 0, y: STAGE_H, w: STAGE_W, h: 5 } },
-    { collider: { x: 0, y: 0, w: 5, h: STAGE_H } },
-    { collider: { x: STAGE_W - 5, y: 0, w: 5, h: STAGE_H } }
+    { collider: { x: 0, y: STAGE_H - 10, w: STAGE_W, h: 5 } },
+    { collider: { x: 0, y: 0, w: 5, h: STAGE_H - 10 } },
+    { collider: { x: STAGE_W - 5, y: 0, w: 5, h: STAGE_H - 10 } }
   ]
 end
 
@@ -85,16 +85,16 @@ def load_colliders
     tiles_per_row = STAGE_W.idiv(6)
     tiles_per_col = STAGE_H.idiv(6)
     grid.each_slice(tiles_per_row).reverse_each.each_with_index do |row, tile_y|
-      next if tile_y == 0 || tile_y == tiles_per_col - 1
+      next if tile_y.zero? || tile_y == tiles_per_col - 1
 
       row.each_with_index do |cell, tile_x|
-        next if cell.zero? || tile_x == 0 || tile_x == tiles_per_row - 1
+        next if cell.zero? || tile_x.zero? || tile_x == tiles_per_row - 1
 
         x = tile_x * 6
-        y = tile_y * 6 - 5
+        y = (tile_y * 6) - 5
 
         neighboring_collider = result.find { |collider|
-          collider[:collider].right == x
+          collider[:collider][:y] == y && collider[:collider].right == x
         }
 
         if neighboring_collider
