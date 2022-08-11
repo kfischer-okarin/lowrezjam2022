@@ -50,7 +50,7 @@ def setup(state)
   state.player[:position][:x] = 20
   Camera.follow_player! state.camera, state.player, immediately: true
   state.rendered_player = {
-    animations: load_player_animations,
+    animations: load_animations('character'),
     sprite: {}.sprite!,
     animation: nil,
     next_animation: nil,
@@ -101,8 +101,8 @@ def load_colliders
   }
 end
 
-def load_player_animations
-  Animations.read_asesprite_json('resources/character.json').tap { |animations|
+def load_animations(type)
+  Animations.read_asesprite_json("resources/#{type}.json").tap { |animations|
     right_animations = animations.keys.select { |key|
       key.to_s.end_with?('_right')
     }
