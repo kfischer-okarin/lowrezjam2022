@@ -2,8 +2,8 @@ def test_animations_integration_test(_args, assert)
   animation = Animations.build(
     w: 48, h: 48, tile_w: 48, tile_h: 48, path: 'resources/character.png',
     frames: [
-      { tile_x: 0, tile_y: 0, ticks: 3 },
-      { tile_x: 48, tile_y: 48, ticks: 3 }
+      { tile_x: 0, tile_y: 0, duration: 3 },
+      { tile_x: 48, tile_y: 48, duration: 3 }
     ]
   )
   primitive = { x: 100, y: 100 }
@@ -49,8 +49,8 @@ def test_animations_integration_test_no_repeat(_args, assert)
   animation = Animations.build(
     w: 48, h: 48, tile_w: 48, tile_h: 48, path: 'resources/character.png',
     frames: [
-      { tile_x: 0, tile_y: 0, ticks: 3 },
-      { tile_x: 48, tile_y: 48, ticks: 3 }
+      { tile_x: 0, tile_y: 0, duration: 3 },
+      { tile_x: 48, tile_y: 48, duration: 3 }
     ]
   )
   primitive = { x: 100, y: 100 }
@@ -143,14 +143,14 @@ def test_animations_read_asesprite_json(_args, assert)
     idle_right: Animations.build(
       w: 48, h: 48, tile_w: 48, tile_h: 48, path: 'tests/resources/character.png',
       frames: [
-        { tile_x: 0, tile_y: 0, ticks: 6 }
+        { tile_x: 0, tile_y: 0, duration: 6 }
       ]
     ),
     walk_right: Animations.build(
       w: 48, h: 48, tile_w: 48, tile_h: 48, path: 'tests/resources/character.png',
       frames: [
-        { tile_x: 48, tile_y: 0, ticks: 3 },
-        { tile_x: 96, tile_y: 0, ticks: 9 }
+        { tile_x: 48, tile_y: 0, duration: 3 },
+        { tile_x: 96, tile_y: 0, duration: 9 }
       ]
     )
   }
@@ -164,7 +164,7 @@ module AnimationsTests
       Animations.build(
         w: 48, h: 48, tile_w: 48, tile_h: 48, path: 'resources/character.png',
         frames: [
-          { tile_x: 0, tile_y: 0, ticks: length }
+          { tile_x: 0, tile_y: 0, duration: length }
         ]
       )
     end

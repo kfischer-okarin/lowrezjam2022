@@ -27,7 +27,7 @@ module Animations
               {
                 tile_x: frame[:x],
                 tile_y: frame[:y],
-                ticks: frame_data.fetch(:duration).idiv(50) * 3 # 50ms = 3 ticks
+                duration: frame_data.fetch(:duration).idiv(50) * 3 # 50ms = 3 ticks
               }
             },
             **base
@@ -43,8 +43,8 @@ module Animations
         }.merge(base),
         frames: frames.map { |frame|
           {
-            duration: frame[:ticks],
-            values: frame.except(:ticks)
+            duration: frame[:duration],
+            values: frame.except(:duration)
           }
         }
       }
