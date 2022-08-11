@@ -1,9 +1,9 @@
 def test_animations_integration_test(_args, assert)
   animation = Animations.build(
-    w: 48, h: 48, path: 'resources/character.png',
+    w: 48, h: 48, tile_w: 48, tile_h: 48, path: 'resources/character.png',
     frames: [
-      { x: 0, y: 0, ticks: 3 },
-      { x: 48, y: 48, ticks: 3 }
+      { tile_x: 0, tile_y: 0, ticks: 3 },
+      { tile_x: 48, tile_y: 48, ticks: 3 }
     ]
   )
   primitive = { x: 100, y: 100 }
@@ -47,10 +47,10 @@ end
 
 def test_animations_integration_test_no_repeat(_args, assert)
   animation = Animations.build(
-    w: 48, h: 48, path: 'resources/character.png',
+    w: 48, h: 48, tile_w: 48, tile_h: 48, path: 'resources/character.png',
     frames: [
-      { x: 0, y: 0, ticks: 3 },
-      { x: 48, y: 48, ticks: 3 }
+      { tile_x: 0, tile_y: 0, ticks: 3 },
+      { tile_x: 48, tile_y: 48, ticks: 3 }
     ]
   )
   primitive = { x: 100, y: 100 }
@@ -141,16 +141,16 @@ def test_animations_read_asesprite_json(_args, assert)
   animations = Animations.read_asesprite_json 'tests/resources/character.json'
   expected_animations = {
     idle_right: Animations.build(
-      w: 48, h: 48, path: 'tests/resources/character.png',
+      w: 48, h: 48, tile_w: 48, tile_h: 48, path: 'tests/resources/character.png',
       frames: [
-        { x: 0, y: 0, ticks: 6 }
+        { tile_x: 0, tile_y: 0, ticks: 6 }
       ]
     ),
     walk_right: Animations.build(
-      w: 48, h: 48, path: 'tests/resources/character.png',
+      w: 48, h: 48, tile_w: 48, tile_h: 48, path: 'tests/resources/character.png',
       frames: [
-        { x: 48, y: 0, ticks: 3 },
-        { x: 96, y: 0, ticks: 9 }
+        { tile_x: 48, tile_y: 0, ticks: 3 },
+        { tile_x: 96, tile_y: 0, ticks: 9 }
       ]
     )
   }
@@ -162,9 +162,9 @@ module AnimationsTests
   class << self
     def an_animation(length: 6)
       Animations.build(
-        w: 48, h: 48, path: 'resources/character.png',
+        w: 48, h: 48, tile_w: 48, tile_h: 48, path: 'resources/character.png',
         frames: [
-          { x: 0, y: 0, ticks: length }
+          { tile_x: 0, tile_y: 0, ticks: length }
         ]
       )
     end

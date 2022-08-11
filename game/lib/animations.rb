@@ -9,6 +9,8 @@ module Animations
       base = {
         w: first_frame[:w],
         h: first_frame[:h],
+        tile_w: first_frame[:w],
+        tile_h: first_frame[:h],
         path: path[0..last_slash_index] + sprite_sheet_data.fetch(:meta).fetch(:image)
       }
 
@@ -23,8 +25,8 @@ module Animations
             frames: sorted_animation_frames.map { |frame_data|
               frame = frame_data.fetch(:frame)
               {
-                x: frame[:x],
-                y: frame[:y],
+                tile_x: frame[:x],
+                tile_y: frame[:y],
                 ticks: frame_data.fetch(:duration).idiv(50) * 3 # 50ms = 3 ticks
               }
             },
@@ -37,9 +39,7 @@ module Animations
     def build(frames:, **base)
       {
         base: {
-          flip_horizontally: false,
-          tile_w: base[:w],
-          tile_h: base[:h]
+          flip_horizontally: false
         }.merge(base),
         frames: frames
       }
@@ -67,8 +67,8 @@ module Animations
 
     def apply!(primitive, animation_state:)
       frame = animation_state[:animation][:frames][animation_state[:frame_index]]
-      primitive[:tile_x] = frame[:x]
-      primitive[:tile_y] = frame[:y]
+      primitive.merge! frame
+      primitive.delete :ticks
     end
 
     def next_tick(animation_state)
