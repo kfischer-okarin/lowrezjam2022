@@ -88,6 +88,39 @@ def test_animations_integration_test_no_repeat(_args, assert)
   assert.equal! primitive, second_frame
 end
 
+def test_animations_metadata(_args, assert)
+  animation = Animations.build(
+    frames: [
+      { duration: 3, metadata: { color: :red } },
+      { duration: 3, metadata: { color: :green } }
+    ]
+  )
+  primitive = {}
+  animation_state = Animations.start!(primitive, animation: animation)
+
+  assert.equal! primitive, {}
+  assert.equal! Animations.current_frame_metadata(animation_state), { color: :red }
+
+  2.times do
+    Animations.next_tick animation_state
+
+    assert.equal! primitive, {}
+    assert.equal! Animations.current_frame_metadata(animation_state), { color: :red }
+  end
+
+  3.times do
+    Animations.next_tick animation_state
+
+    assert.equal! primitive, {}
+    assert.equal! Animations.current_frame_metadata(animation_state), { color: :green }
+  end
+
+  Animations.next_tick animation_state
+
+  assert.equal! primitive, {}
+  assert.equal! Animations.current_frame_metadata(animation_state), { color: :red }
+end
+
 def test_animations_flipped_horizontally(_args, assert)
   animation = AnimationsTests.an_animation
   flipped_animation = Animations.flipped_horizontally animation

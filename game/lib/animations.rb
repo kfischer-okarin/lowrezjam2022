@@ -8,7 +8,8 @@ module Animations
         frames: frames.map { |frame|
           {
             duration: frame[:duration],
-            values: frame.except(:duration)
+            metadata: frame[:metadata],
+            values: frame.except(:duration, :metadata)
           }
         }
       }
@@ -35,7 +36,7 @@ module Animations
     end
 
     def apply!(primitive, animation_state:)
-      frame = animation_state[:animation][:frames][animation_state[:frame_index]]
+      frame = current_frame(animation_state)
       primitive.merge! frame[:values]
     end
 
@@ -61,8 +62,18 @@ module Animations
       end
     end
 
+    def current_frame_metadata(animation_state)
+      current_frame(animation_state)[:metadata]
+    end
+
     def finished?(animation_state)
       animation_state[:finished]
+    end
+
+    private
+
+    def current_frame(animation_state)
+      animation_state[:animation][:frames][animation_state[:frame_index]]
     end
   end
 end
