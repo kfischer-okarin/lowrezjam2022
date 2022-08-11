@@ -179,7 +179,7 @@ def handle_firethrower(player, fire_particles)
 
   return unless player[:firing]
 
-  x_offset = player[:face_direction] == :left ? -8 : 7
+  x_offset = player[:face_direction] == :left ? -9 : 7
   2.times do |i|
     fire_particles << FireParticle.build(
       x: player[:position][:x] + x_offset,
