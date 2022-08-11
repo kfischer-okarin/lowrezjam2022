@@ -142,6 +142,8 @@ def render(state, outputs)
 
   screen.primitives << state.fire_particles
 
+  render_colliders(screen, camera, state) if $debug.debug_mode?
+
   outputs.background_color = [0, 0, 0]
   outputs.primitives << { x: 288, y: 8, w: 704, h: 704, path: :screen }.sprite!
 end
@@ -158,6 +160,19 @@ def update_animation(render_state)
       animation: render_state[:animations][next_animation]
     )
   end
+end
+
+def render_colliders(outputs, camera, state)
+  render_collider outputs, camera, state.player
+  state.colliders.each do |collider|
+    render_collider outputs, camera, collider
+  end
+end
+
+def render_collider(outputs, camera, entity)
+  rect = entity[:collider].to_border r: 255, g: 0, b: 0
+  Camera.apply! camera, rect
+  outputs.primitives << rect
 end
 
 def update(state)

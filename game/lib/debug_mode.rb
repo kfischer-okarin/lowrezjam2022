@@ -113,6 +113,7 @@ module DebugExtension
   module Args
     def debug
       @debug ||= Debug.new(self)
+      $debug = @debug
     end
   end
 
