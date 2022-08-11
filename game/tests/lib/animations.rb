@@ -91,13 +91,17 @@ end
 def test_animations_flipped_horizontally(_args, assert)
   animation = AnimationsTests.an_animation
   flipped_animation = Animations.flipped_horizontally animation
+  flipped_twice_animation = Animations.flipped_horizontally flipped_animation
 
   sprite1 = {}
   sprite2 = {}
+  sprite3 = {}
   Animations.start! sprite1, animation: animation
   Animations.start! sprite2, animation: flipped_animation
+  Animations.start! sprite3, animation: flipped_twice_animation
 
-  assert.equal! sprite2.flip_horizontally, !sprite1.flip_horizontally
+  assert.equal! sprite2.flip_horizontally, !sprite1.flip_horizontally, "Flipping didn't work"
+  assert.equal! sprite3.flip_horizontally, !sprite2.flip_horizontally, "Flipping twice didn't work"
 end
 
 def test_animations_finished_repeating_animation(_args, assert)
