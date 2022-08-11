@@ -26,6 +26,14 @@ module Player
       stop_vertical_movement(player) if movement_result[:collisions][:up]
     end
 
+    def update_rendered_state!(player, rendered_state)
+      rendered_state[:sprite].merge! player[:position]
+      rendered_state[:sprite][:x] -= 8
+
+      rendered_state[:next_animation] = :"#{player[:state]}_#{player[:face_direction]}"
+      update_animation rendered_state
+    end
+
     private
 
     def update_state(player, input_actions)

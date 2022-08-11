@@ -50,6 +50,7 @@ def setup(state)
   state.player[:position][:x] = 20
   Camera.follow_player! state.camera, state.player, immediately: true
   state.rendered_player = build_render_state load_animations('character')
+  state.rendered_slime = build_render_state load_animations('slime')
   state.colliders = get_stage_bounds + load_colliders
 
   state.fire_particles = []
@@ -130,13 +131,8 @@ def render(state, outputs)
   Camera.apply! camera, stage_sprite
   screen.primitives << stage_sprite
 
-  state.rendered_player[:sprite][:x] = state.player[:position][:x] - 8
-  state.rendered_player[:sprite][:y] = state.player[:position][:y]
+  Player.update_rendered_state! state.player, state.rendered_player
   Camera.apply! camera, state.rendered_player[:sprite]
-
-  state.rendered_player[:next_animation] = :"#{state.player[:state]}_#{state.player[:face_direction]}"
-  update_animation(state.rendered_player)
-
   screen.primitives << state.rendered_player[:sprite]
 
   state.fire_particles.each do |particle|
