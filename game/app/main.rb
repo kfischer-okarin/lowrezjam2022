@@ -76,7 +76,7 @@ def get_stage_bounds
 end
 
 def load_colliders
-  stage_data = Animations.deep_symbolize_keys! $gtk.parse_json_file('resources/stage.ldtk')
+  stage_data = Animations::AsespriteJson.deep_symbolize_keys! $gtk.parse_json_file('resources/stage.ldtk')
   level = stage_data[:levels][0]
   layer = level[:layerInstances][0]
   grid = layer[:intGridCsv]
@@ -107,7 +107,7 @@ def load_colliders
 end
 
 def load_animations(type)
-  Animations.read_asesprite_json("resources/#{type}.json").tap { |animations|
+  Animations::AsespriteJson.read("resources/#{type}.json").tap { |animations|
     right_animations = animations.keys.select { |key|
       key.to_s.end_with?('_right')
     }

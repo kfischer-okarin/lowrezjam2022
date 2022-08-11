@@ -137,27 +137,6 @@ def test_animations_finished_one_time_animation(_args, assert)
   assert.true! Animations.finished? animation_state
 end
 
-def test_animations_read_asesprite_json(_args, assert)
-  animations = Animations.read_asesprite_json 'tests/resources/character.json'
-  expected_animations = {
-    idle_right: Animations.build(
-      w: 48, h: 48, tile_w: 48, tile_h: 48, path: 'tests/resources/character.png',
-      frames: [
-        { tile_x: 0, tile_y: 0, duration: 6 }
-      ]
-    ),
-    walk_right: Animations.build(
-      w: 48, h: 48, tile_w: 48, tile_h: 48, path: 'tests/resources/character.png',
-      frames: [
-        { tile_x: 48, tile_y: 0, duration: 3 },
-        { tile_x: 96, tile_y: 0, duration: 9 }
-      ]
-    )
-  }
-
-  assert.equal! animations, expected_animations
-end
-
 module AnimationsTests
   class << self
     def an_animation(length: 6)
