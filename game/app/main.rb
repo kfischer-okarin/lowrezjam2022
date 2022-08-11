@@ -136,8 +136,7 @@ def render(state, outputs)
   screen.primitives << state.rendered_player[:sprite]
 
   state.fire_particles.each do |particle|
-    particle[:x] = particle[:position][:x]
-    particle[:y] = particle[:position][:y]
+    particle.merge! particle[:position]
     Camera.apply! camera, particle
   end
 
