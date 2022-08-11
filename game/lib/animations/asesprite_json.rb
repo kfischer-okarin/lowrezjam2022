@@ -12,6 +12,7 @@ module Animations
           h: first_frame[:h],
           tile_w: first_frame[:w],
           tile_h: first_frame[:h],
+          flip_horizontally: false,
           path: path[0..last_slash_index] + sprite_sheet_data.fetch(:meta).fetch(:image)
         }
 

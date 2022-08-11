@@ -4,9 +4,7 @@ module Animations
   class << self
     def build(frames:, **base)
       {
-        base: {
-          flip_horizontally: false
-        }.merge(base),
+        base: base,
         frames: frames.map { |frame|
           {
             duration: frame[:duration],

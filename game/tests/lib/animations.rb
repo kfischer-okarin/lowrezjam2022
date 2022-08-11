@@ -10,14 +10,12 @@ def test_animations_integration_test(_args, assert)
   first_frame = {
     x: 100, y: 100,
     w: 48, h: 48,
-    flip_horizontally: false,
     tile_x: 0, tile_y: 0, tile_w: 48, tile_h: 48,
     path: 'resources/character.png'
   }
   second_frame = {
     x: 100, y: 100,
     w: 48, h: 48,
-    flip_horizontally: false,
     tile_x: 48, tile_y: 48, tile_w: 48, tile_h: 48,
     path: 'resources/character.png'
   }
@@ -57,14 +55,12 @@ def test_animations_integration_test_no_repeat(_args, assert)
   first_frame = {
     x: 100, y: 100,
     w: 48, h: 48,
-    flip_horizontally: false,
     tile_x: 0, tile_y: 0, tile_w: 48, tile_h: 48,
     path: 'resources/character.png'
   }
   second_frame = {
     x: 100, y: 100,
     w: 48, h: 48,
-    flip_horizontally: false,
     tile_x: 48, tile_y: 48, tile_w: 48, tile_h: 48,
     path: 'resources/character.png'
   }
@@ -91,7 +87,6 @@ def test_animations_integration_test_no_repeat(_args, assert)
 
   assert.equal! primitive, second_frame
 end
-
 
 def test_animations_flipped_horizontally(_args, assert)
   animation = AnimationsTests.an_animation
