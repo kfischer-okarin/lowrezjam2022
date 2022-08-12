@@ -9,6 +9,7 @@ require 'app/fire_particle.rb'
 require 'app/input_actions.rb'
 require 'app/movement.rb'
 require 'app/player.rb'
+require 'app/slime.rb'
 require 'app/resources.rb'
 
 SCREEN_W = 64
@@ -46,12 +47,18 @@ end
 
 def setup(state)
   state.camera = Camera.build
+
   state.player = Player.build
   state.player[:position][:x] = 20
   Movement.update_collider state.player
   Camera.follow_player! state.camera, state.player, immediately: true
   state.rendered_player = build_render_state load_animations('character')
+
+  state.slime = Slime.build
+  state.slime[:position][:x] = STAGE_W - 20
+  Movement.update_collider state.slime
   state.rendered_slime = build_render_state load_animations('slime')
+
   state.colliders = get_stage_bounds + load_colliders
 
   state.fire_particles = []
@@ -133,6 +140,10 @@ def render(state, outputs)
   Camera.apply! camera, stage_sprite
   screen.primitives << stage_sprite
 
+  Slime.update_rendered_state! state.slime, state.rendered_slime
+  Camera.apply! camera, state.rendered_slime[:sprite]
+  screen.primitives << state.rendered_slime[:sprite]
+
   Player.update_rendered_state! state.player, state.rendered_player
   Camera.apply! camera, state.rendered_player[:sprite]
   screen.primitives << state.rendered_player[:sprite]
@@ -166,6 +177,7 @@ end
 
 def render_colliders(outputs, camera, state)
   render_collider outputs, camera, state.player
+  render_collider outputs, camera, state.slime
   state.colliders.each do |collider|
     render_collider outputs, camera, collider
   end
@@ -182,6 +194,7 @@ def update(state)
   Player.update!(player, state)
   handle_firethrower(player, state.fire_particles)
   Camera.follow_player! state.camera, player
+  Slime.update! state.slime, state
 end
 
 def handle_firethrower(player, fire_particles)

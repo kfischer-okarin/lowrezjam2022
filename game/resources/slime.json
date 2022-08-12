@@ -1,0 +1,66 @@
+{ "frames": [
+   {
+    "filename": "idle-----0",
+    "frame": { "x": 0, "y": 0, "w": 24, "h": 24 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 24, "h": 24 },
+    "sourceSize": { "w": 24, "h": 24 },
+    "duration": 300
+   },
+   {
+    "filename": "idle-----1",
+    "frame": { "x": 24, "y": 0, "w": 24, "h": 24 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 24, "h": 24 },
+    "sourceSize": { "w": 24, "h": 24 },
+    "duration": 300
+   },
+   {
+    "filename": "move_right-----0",
+    "frame": { "x": 24, "y": 0, "w": 24, "h": 24 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 24, "h": 24 },
+    "sourceSize": { "w": 24, "h": 24 },
+    "duration": 300
+   },
+   {
+    "filename": "move_right-----1",
+    "frame": { "x": 0, "y": 24, "w": 24, "h": 24 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 24, "h": 24 },
+    "sourceSize": { "w": 24, "h": 24 },
+    "duration": 300
+   },
+   {
+    "filename": "move_right-----2",
+    "frame": { "x": 24, "y": 24, "w": 24, "h": 24 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 24, "h": 24 },
+    "sourceSize": { "w": 24, "h": 24 },
+    "duration": 300
+   }
+ ],
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.2.39-arm64",
+  "image": "slime.png",
+  "format": "RGBA8888",
+  "size": { "w": 48, "h": 48 },
+  "scale": "1",
+  "frameTags": [
+   { "name": "idle", "from": 0, "to": 1, "direction": "forward" },
+   { "name": "move_right", "from": 2, "to": 4, "direction": "pingpong" }
+  ],
+  "layers": [
+   { "name": "Layer 1", "opacity": 255, "blendMode": "normal" }
+  ],
+  "slices": [
+   { "name": "collider", "color": "#0000ffff", "keys": [{ "frame": 0, "bounds": {"x": 6, "y": 16, "w": 12, "h": 8 } }, { "frame": 1, "bounds": {"x": 5, "y": 18, "w": 14, "h": 6 } }, { "frame": 2, "bounds": {"x": 5, "y": 18, "w": 14, "h": 6 } }, { "frame": 3, "bounds": {"x": 6, "y": 17, "w": 13, "h": 7 } }, { "frame": 4, "bounds": {"x": 7, "y": 16, "w": 12, "h": 8 } }] }
+  ]
+ }
+}
