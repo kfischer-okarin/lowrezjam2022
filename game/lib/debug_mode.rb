@@ -126,5 +126,5 @@ module DebugExtension
   end
 end
 
-GTK::Args.include DebugExtension::Args
-GTK::Runtime.prepend DebugExtension::Runtime
+GTK::Args.include DebugExtension::Args unless GTK::Args.is_a? DebugExtension::Args
+GTK::Runtime.prepend DebugExtension::Runtime unless GTK::Runtime.is_a? DebugExtension::Runtime
