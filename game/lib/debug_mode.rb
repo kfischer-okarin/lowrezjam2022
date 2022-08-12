@@ -77,16 +77,17 @@ module DebugExtension
 
     def reset_with_same_seed
       $gtk.reset
-      handle_reset
     end
 
     def reset
       $gtk.reset seed: (Time.now.to_f * 1000).to_i
-      handle_reset
     end
 
     def handle_reset
       @reset_handlers.each(&:call)
+      $gtk.reset_sprite 'resources/stage/png/Level_0.png'
+      $gtk.reset_sprite 'resources/character.png'
+      $gtk.reset_sprite 'resources/slime.png'
     end
 
     def add_static_logs
@@ -122,6 +123,11 @@ module DebugExtension
     def tick_core
       @args.debug.tick
       super
+    end
+
+    def reset(*args)
+      super
+      @args.debug.handle_reset
     end
   end
 end
