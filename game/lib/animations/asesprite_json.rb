@@ -32,6 +32,13 @@ module Animations
         }
       end
 
+      def flipped_horizontally(animation)
+        {
+          base: animation[:base].merge(flip_horizontally: !animation[:base][:flip_horizontally]),
+          frames: animation[:frames]
+        }
+      end
+
       private
 
       def build_base(sprite_sheet_data, path)

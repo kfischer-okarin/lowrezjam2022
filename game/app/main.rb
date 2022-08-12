@@ -123,7 +123,7 @@ def load_animations(type)
 
     right_animations.each do |key|
       left_key = key.to_s.sub('_right', '_left').to_sym
-      animations[left_key] = Animations.flipped_horizontally animations[key]
+      animations[left_key] = Animations::AsespriteJson.flipped_horizontally animations[key]
     end
   }
 end

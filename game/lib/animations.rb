@@ -15,13 +15,6 @@ module Animations
       }
     end
 
-    def flipped_horizontally(animation)
-      {
-        base: animation[:base].merge(flip_horizontally: !animation[:base][:flip_horizontally]),
-        frames: animation[:frames]
-      }
-    end
-
     def start!(primitive, animation:, repeat: true)
       {
         animation: animation,
