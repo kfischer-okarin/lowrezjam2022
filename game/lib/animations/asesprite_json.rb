@@ -36,7 +36,9 @@ module Animations
       def flipped_horizontally(animation)
         {
           base: animation[:base].merge(flip_horizontally: !animation[:base][:flip_horizontally]),
-          frames: animation[:frames]
+          frames: animation[:frames].map { |frame|
+            flip_slices(frame, frame_width: animation[:base][:w])
+          }
         }
       end
 
@@ -68,6 +70,16 @@ module Animations
             slices[name] = slice_bounds
           end
         }
+      end
+
+      def flip_slices(frame, frame_width:)
+        frame.merge(
+          metadata: {
+            slices: frame[:metadata][:slices].transform_values { |bounds|
+              bounds.merge(x: frame_width - bounds[:x] - bounds[:w])
+            }
+          }
+        )
       end
 
       def deep_symbolize_keys!(value)

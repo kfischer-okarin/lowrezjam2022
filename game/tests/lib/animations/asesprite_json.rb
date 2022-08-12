@@ -53,11 +53,7 @@ def test_animations_asesprite_json_flipped_horizontally(_args, assert)
       {
         tile_x: 0, tile_y: 0,
         duration: 6,
-        metadata: {
-          slices: {
-            collider: { x: 5, y: 0, w: 20, h: 20 }
-          }
-        }
+        metadata: { slices: {} }
       }
     ]
   )
@@ -73,4 +69,44 @@ def test_animations_asesprite_json_flipped_horizontally(_args, assert)
 
   assert.equal! sprite2.flip_horizontally, !sprite1.flip_horizontally, "Flipping didn't work"
   assert.equal! sprite3.flip_horizontally, !sprite2.flip_horizontally, "Flipping twice didn't work"
+end
+
+def test_animations_asesprite_json_flipped_horizontally_slices(_args, assert)
+  animation = Animations.build(
+    w: 48, h: 48, tile_w: 48, tile_h: 48, path: 'tests/resources/character.png',
+    flip_horizontally: false,
+    frames: [
+      {
+        tile_x: 0, tile_y: 0,
+        duration: 6,
+        metadata: {
+          slices: {
+            collider: { x: 5, y: 0, w: 20, h: 20 }
+          }
+        }
+      }
+    ]
+  )
+  flipped_animation = Animations::AsespriteJson.flipped_horizontally animation
+  flipped_twice_animation = Animations::AsespriteJson.flipped_horizontally flipped_animation
+  flipped_state = Animations.start!({}, animation: flipped_animation)
+  flipped_twice_state = Animations.start!({}, animation: flipped_twice_animation)
+
+  flipped_metadata = Animations.current_frame_metadata flipped_state
+  flipped_twice_metadata = Animations.current_frame_metadata flipped_twice_state
+
+  assert.equal! flipped_metadata,
+                {
+                  slices: {
+                    collider: { x: 23, y: 0, w: 20, h: 20 }
+                  }
+                },
+                "Slices weren't flipped"
+  assert.equal! flipped_twice_metadata,
+                {
+                  slices: {
+                    collider: { x: 5, y: 0, w: 20, h: 20 }
+                  }
+                },
+                "Slices weren't flipped back"
 end
