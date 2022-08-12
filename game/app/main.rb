@@ -79,8 +79,9 @@ end
 def load_colliders
   stage_data = Animations::AsespriteJson.deep_symbolize_keys! $gtk.parse_json_file('resources/stage.ldtk')
   level = stage_data[:levels][0]
-  layer = level[:layerInstances][0]
-  grid = layer[:intGridCsv]
+  wall_layer_uid = stage_data[:defs][:layers].find { |layer| layer[:identifier] == 'Walls' }[:uid]
+  collider_layer = level[:layerInstances].find { |layer| layer[:layerDefUid] == wall_layer_uid }
+  grid = collider_layer[:intGridCsv]
   [].tap { |result|
     tiles_per_row = STAGE_W.idiv(6)
     tiles_per_col = STAGE_H.idiv(6)
