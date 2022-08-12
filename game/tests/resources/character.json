@@ -42,7 +42,7 @@
   { "name": "Sprite", "opacity": 255, "blendMode": "normal" }
  ],
  "slices": [
-  { "name": "collider", "color": "#0000ffff", "keys": [{ "frame": 0, "bounds": {"x": 5, "y": 0, "w": 20, "h": 20 } }, { "frame": 1, "bounds": {"x": 6, "y": 0, "w": 22, "h": 20 } }, { "frame": 2, "bounds": {"x": 6, "y": 0, "w": 22, "h": 20 } }] }
+  { "name": "collider", "color": "#0000ffff", "keys": [{ "frame": 0, "bounds": {"x": 5, "y": 28, "w": 20, "h": 20 } }, { "frame": 1, "bounds": {"x": 6, "y": 28, "w": 22, "h": 20 } }, { "frame": 2, "bounds": {"x": 6, "y": 28, "w": 22, "h": 20 } }] }
  ]
 }
 }

@@ -7,6 +7,7 @@ module Animations
         base = build_base(sprite_sheet_data, path)
 
         {}.tap { |result|
+          frame_size = base.slice(:w, :h)
           frames = sprite_sheet_data.fetch :frames
           slices_data = sprite_sheet_data.fetch(:meta).fetch :slices
 
@@ -22,7 +23,7 @@ module Animations
                   tile_y: frame[:y],
                   duration: frame_data.fetch(:duration).idiv(50) * 3, # 50ms = 3 ticks
                   metadata: {
-                    slices: slice_bounds_for_frame(slices_data, frame_index)
+                    slices: slice_bounds_for_frame(slices_data, frame_index, frame_size)
                   }
                 }
               },
@@ -55,14 +56,16 @@ module Animations
         }
       end
 
-      def slice_bounds_for_frame(slices_data, frame_index)
+      def slice_bounds_for_frame(slices_data, frame_index, frame_size)
         {}.tap { |slices|
           slices_data.each do |slice_data|
             name = slice_data.fetch(:name).to_sym
             key_frame = slice_data[:keys].select { |slice_key_data|
               slice_key_data.fetch(:frame) <= frame_index
             }.last
-            slices[name] = key_frame.fetch(:bounds)
+            slice_bounds = key_frame.fetch(:bounds).dup
+            slice_bounds[:y] = frame_size[:h] - slice_bounds[:y] - slice_bounds[:h]
+            slices[name] = slice_bounds
           end
         }
       end
