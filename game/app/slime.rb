@@ -23,11 +23,16 @@ module Slime
     end
 
     def update_rendered_state!(slime, rendered_state)
+      x_offset = -12
       rendered_state[:sprite].merge! slime[:position]
-      rendered_state[:sprite][:x] -= 12
+      rendered_state[:sprite][:x] += x_offset
 
       rendered_state[:next_animation] = :"move_#{slime[:face_direction]}"
       update_animation rendered_state
+
+      metadata = Animations.current_frame_metadata rendered_state[:animation_state]
+      collider_bounds = metadata[:slices][:collider]
+      slime[:collider_bounds] = collider_bounds.merge(x: collider_bounds[:x] + x_offset)
     end
   end
 end
