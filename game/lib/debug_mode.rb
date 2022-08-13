@@ -62,8 +62,9 @@ module DebugExtension
 
     DEBUG_FUNCTIONS = {
       f9: :toggle_debug,
-      f11: :reset_with_same_seed,
-      f12: :reset
+      f10: :reset_with_same_seed,
+      f11: :reset,
+      f12: :take_screenshot
     }.freeze
 
     def handle_debug_function
@@ -81,6 +82,13 @@ module DebugExtension
 
     def reset
       $gtk.reset seed: (Time.now.to_f * 1000).to_i
+    end
+
+    def take_screenshot
+      @args.outputs.screenshots << {
+        x: 288, y: 8, w: 704, h: 704,
+        path: "screenshot-#{Time.now}.png"
+      }
     end
 
     def handle_reset
