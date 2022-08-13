@@ -189,6 +189,21 @@ def render_collider(outputs, camera, entity)
   outputs.primitives << rect
 end
 
+def flashing_sprite(outputs, sprite, render_target_name, r: 255, g: 255, b: 255)
+  # Prepare render target in sprite size
+  render_target = outputs[render_target_name]
+  render_target.width = sprite[:w]
+  render_target.height = sprite[:h]
+
+  # Render sprite at bottom left of render target
+  render_target.primitives << sprite.merge(x: 0, y: 0)
+  # Additive with colored rectangle
+  render_target.primitives << sprite.to_solid(x: 0, y: 0, r: r, g: g, b: b, blendmode_enum: 2)
+
+  # Return render target
+  { x: sprite[:x], y: sprite[:y], w: sprite[:w], h: sprite[:h], path: render_target_name }.sprite!
+end
+
 def update(state)
   player = state.player
   Player.update!(player, state)
