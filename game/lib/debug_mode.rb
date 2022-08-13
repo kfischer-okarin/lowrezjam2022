@@ -86,7 +86,7 @@ module DebugExtension
 
     def take_screenshot
       @args.outputs.screenshots << {
-        x: 288, y: 8, w: 704, h: 704,
+        x: 288, y: 8, w: 704, h: 704, a: 255,
         path: "screenshot-#{Time.now}.png"
       }
     end
