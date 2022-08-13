@@ -130,7 +130,7 @@ end
 
 def render(state, outputs)
   screen = outputs[:screen]
-  screen.background_color = [0x18, 0x14, 0x25]
+  screen.background_color = [0x22, 0x20, 0x34]
   screen.width = SCREEN_W
   screen.height = SCREEN_H
 
