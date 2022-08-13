@@ -189,7 +189,7 @@ def render_collider(outputs, camera, entity)
   outputs.primitives << rect
 end
 
-def flashing_sprite(outputs, sprite, render_target_name, r: 255, g: 255, b: 255)
+def white_sprite(outputs, sprite, render_target_name)
   # Prepare render target in sprite size
   render_target = outputs[render_target_name]
   render_target.width = sprite[:w]
@@ -197,10 +197,10 @@ def flashing_sprite(outputs, sprite, render_target_name, r: 255, g: 255, b: 255)
 
   # Render sprite at bottom left of render target
   render_target.primitives << sprite.merge(x: 0, y: 0)
-  # Additive with colored rectangle
-  render_target.primitives << sprite.to_solid(x: 0, y: 0, r: r, g: g, b: b, blendmode_enum: 2)
+  # Additive overlay with white rectangle to create a white sprite
+  render_target.primitives << sprite.to_solid(x: 0, y: 0, r: 255, g: 255, b: 255, blendmode_enum: 2)
 
-  # Return render target
+  # Return render target as sprite
   { x: sprite[:x], y: sprite[:y], w: sprite[:w], h: sprite[:h], path: render_target_name }.sprite!
 end
 
