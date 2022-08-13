@@ -62,6 +62,16 @@ def setup(state)
   state.colliders = get_stage_bounds + load_colliders
 
   state.fire_particles = []
+  state.ui_running_animations = []
+  state.animations = {
+    health_down: Animations.build(
+      tile_x: 0, tile_y: 0, tile_w: 8, tile_h: 3, w: 8,
+      frames: [
+        { duration: 30 },
+        *([7, 6, 5, 4, 3, 2, 1].map { |w| { w: w, tile_w: w, duration: 4 } })
+      ]
+    )
+  }
 end
 
 def build_render_state(animations)
@@ -157,7 +167,8 @@ def render(state, outputs)
 
   render_colliders(screen, camera, state) if $debug.debug_mode?
 
-  render_ui(screen, state.player)
+  render_ui(screen, state)
+  update_ui_animations(screen, state.ui_running_animations)
 
   outputs.background_color = [0, 0, 0]
   outputs.primitives << { x: 288, y: 8, w: 704, h: 704, path: :screen }.sprite!
@@ -191,7 +202,8 @@ def render_collider(outputs, camera, entity)
   outputs.primitives << rect
 end
 
-def render_ui(outputs, player)
+def render_ui(outputs, state)
+  player = state.player
   outputs.primitives << { x: 0, y: SCREEN_H - 5, w: SCREEN_W, h: 5, r: 0, g: 0, b: 0 }.solid!
   health = player[:health]
   outputs.primitives << health[:max].times.map { |i|
@@ -199,17 +211,32 @@ def render_ui(outputs, player)
       health[:current] > i ? Colors::DawnBringer32::BRIGHT_RED : Colors::DawnBringer32::DARK_BROWN
     )
   }
-  return unless health[:ticks_since_hurt] < 60
 
-  hurt_hit_point_sprite = health_bar_sprite(health[:current]).merge!(Colors::DawnBringer32::WHITE)
-  if health[:ticks_since_hurt] > 30
-    width = interpolate(30, 60, health[:ticks_since_hurt], 8, 0).floor
-    hurt_hit_point_sprite.merge!(
-      tile_x: 0, tile_y: 0, tile_w: width, tile_h: 3, w: width
-    )
+  health[:ticks_since_hurt] += 1
+  if $args.inputs.keyboard.key_down.f
+    health[:ticks_since_hurt] = 0
+    health[:current] -= 1
   end
 
-  outputs.primitives << hurt_hit_point_sprite
+
+  return unless health[:ticks_since_hurt].zero?
+
+  state.ui_running_animations << {
+    sprite: health_bar_sprite(health[:current]).merge!(Colors::DawnBringer32::WHITE),
+    animation_state: Animations.start!({}, animation: state.animations[:health_down], repeat: false)
+  }
+end
+
+def update_ui_animations(outputs, running_animations)
+  running_animations.each do |running_animation|
+    Animations.next_tick running_animation[:animation_state]
+    Animations.apply! running_animation[:sprite], animation_state: running_animation[:animation_state]
+    outputs.primitives << running_animation[:sprite]
+  end
+
+  running_animations.reject! { |running_animation|
+    Animations.finished? running_animation[:animation_state]
+  }
 end
 
 def health_bar_sprite(hp_index)
@@ -259,10 +286,6 @@ def handle_firethrower(player, fire_particles)
       direction: player[:face_direction]
     )
   end
-end
-
-def interpolate(begin_time, end_time, time, begin_value, end_value)
-  begin_value + ((time - begin_time) * ((end_value - begin_value) / (end_time - begin_time)))
 end
 
 $gtk.reset
