@@ -10,7 +10,8 @@ module Player
         state: :idle,
         firing: false,
         face_direction: :right,
-        can_jump: true
+        can_jump: true,
+        health: { max: 5, current: 5, ticks_since_hurt: 1000 }
       }
     end
 

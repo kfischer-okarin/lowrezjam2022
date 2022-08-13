@@ -35,7 +35,7 @@ CAMERA_FOLLOW_Y_OFFSET = -5
 CAMERA_MIN_X = 0
 CAMERA_MAX_X = STAGE_W - SCREEN_W
 CAMERA_MIN_Y = -5
-CAMERA_MAX_Y = STAGE_H - SCREEN_H - 5
+CAMERA_MAX_Y = STAGE_H - SCREEN_H
 
 def tick(args)
   state = args.state
@@ -157,6 +157,8 @@ def render(state, outputs)
 
   render_colliders(screen, camera, state) if $debug.debug_mode?
 
+  render_ui(screen, state.player)
+
   outputs.background_color = [0, 0, 0]
   outputs.primitives << { x: 288, y: 8, w: 704, h: 704, path: :screen }.sprite!
 end
@@ -187,6 +189,34 @@ def render_collider(outputs, camera, entity)
   rect = entity[:collider].to_border r: 255, g: 0, b: 0
   Camera.apply! camera, rect
   outputs.primitives << rect
+end
+
+def render_ui(outputs, player)
+  outputs.primitives << { x: 0, y: SCREEN_H - 5, w: SCREEN_W, h: 5, r: 0, g: 0, b: 0 }.solid!
+  health = player[:health]
+  outputs.primitives << health[:max].times.map { |i|
+    health_bar_sprite(i).merge!(
+      health[:current] > i ? Colors::DawnBringer32::BRIGHT_RED : Colors::DawnBringer32::DARK_BROWN
+    )
+  }
+  return unless health[:ticks_since_hurt] < 60
+
+  hurt_hit_point_sprite = health_bar_sprite(health[:current]).merge!(Colors::DawnBringer32::WHITE)
+  if health[:ticks_since_hurt] > 30
+    width = interpolate(30, 60, health[:ticks_since_hurt], 8, 0).floor
+    hurt_hit_point_sprite.merge!(
+      tile_x: 0, tile_y: 0, tile_w: width, tile_h: 3, w: width
+    )
+  end
+
+  outputs.primitives << hurt_hit_point_sprite
+end
+
+def health_bar_sprite(hp_index)
+  {
+    x: 1 + (hp_index * 7), y: SCREEN_H - 4, w: 8, h: 3,
+    path: 'resources/health.png'
+  }.sprite!
 end
 
 def white_sprite(outputs, sprite, render_target_name)
@@ -229,6 +259,10 @@ def handle_firethrower(player, fire_particles)
       direction: player[:face_direction]
     )
   end
+end
+
+def interpolate(begin_time, end_time, time, begin_value, end_value)
+  begin_value + ((time - begin_time) * ((end_value - begin_value) / (end_time - begin_time)))
 end
 
 $gtk.reset
