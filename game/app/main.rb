@@ -214,8 +214,10 @@ def render(state, outputs, audio)
   screen.primitives << state.rendered_slime[:sprite]
 
   Player.update_rendered_state! player, state.rendered_player
-  Camera.apply! camera, state.rendered_player[:sprite]
-  screen.primitives << state.rendered_player[:sprite]
+  player_sprite = state.rendered_player[:sprite]
+  player_sprite = white_sprite(outputs, player_sprite, :blinking_player) if player[:health][:ticks_since_hurt] < 10
+  Camera.apply! camera, player_sprite
+  screen.primitives << player_sprite
 
   state.fire_particles.each do |particle|
     particle.merge! particle[:position]
