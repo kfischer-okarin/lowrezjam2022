@@ -85,10 +85,11 @@ module Player
     end
 
     def handle_dangers(player, dangers)
-      danger_collision = Movement.check_collision(player, dangers)
       health = player[:health]
 
-      if danger_collision
+      danger_collision = Movement.check_collision(player, dangers)
+
+      if danger_collision && health[:ticks_since_hurt] >= INVINCIBLE_TICKS_AFTER_DAMAGE
         health[:ticks_since_hurt] = 0
         health[:current] -= 1
       else

@@ -585,6 +585,32 @@ def test_player_should_lose_hp_when_running_into_the_slime(args, assert)
   end
 end
 
+def test_player_should_not_be_hurt_right_after_being_hurt(args, assert)
+  [
+    { position: { x: 0, y: 0 }, move: :right, slime_position: { x: 10, y: 0 } },
+    { position: { x: 0, y: 0 }, move: :left, slime_position: { x: -10, y: 0 } }
+  ].each do |test_case|
+    PlayerTests.test(args) do
+      with position: test_case[:position]
+
+      slime_is at: test_case[:slime_position]
+
+      safe_loop "Expected #{player_description} to be hurt, but he wasn't" do
+        input move: test_case[:move]
+
+        break if player[:health][:ticks_since_hurt].zero?
+      end
+
+      no_input
+
+      assert.equal! player[:health][:ticks_since_hurt],
+                    1,
+                    "Expected #{player_description} to not be hurt twice in a row" \
+                    "when running to the #{test_case[:move]} into the slime"
+    end
+  end
+end
+
 def test_player_ticks_since_hurt_increase(args, assert)
   PlayerTests.test(args) do
     ticks_since_hurt_before = player[:health][:ticks_since_hurt]

@@ -39,6 +39,8 @@ CAMERA_MAX_Y = STAGE_H - SCREEN_H
 MAX_SCREEN_SHAKE = 10
 SCREEN_SHAKE_DECAY = 0.01
 
+INVINCIBLE_TICKS_AFTER_DAMAGE = 120
+
 def tick(args)
   state = args.state
   audio = args.audio
