@@ -60,6 +60,17 @@ def setup(state, audio)
   Movement.update_collider state.slime
   state.rendered_slime = build_render_state load_animations('slime')
 
+  state.fans = [
+    { x: 12, y: 60 },
+    { x: STAGE_W.idiv(2) - 9, y: 60 },
+    { x: STAGE_W - 12 - 18, y: 60 },
+  ].map { |position|
+    build_render_state(load_animations('fan')).tap { |rendered_fan|
+      rendered_fan[:position] = position
+      rendered_fan[:next_animation] = :fan_rotation
+    }
+  }
+
   state.colliders = get_stage_bounds + load_colliders
 
   state.fire_particles = []
@@ -160,6 +171,14 @@ def render(state, outputs, audio)
   stage_sprite = { x: 0, y: -5, w: STAGE_W, h: STAGE_H, path: 'resources/stage/png/Level_0.png' }.sprite!
   Camera.apply! camera, stage_sprite
   screen.primitives << stage_sprite
+
+  state.fans.each do |fan|
+    fan_sprite = fan[:sprite]
+    fan_sprite.merge! fan[:position]
+    update_animation fan
+    Camera.apply! camera, fan_sprite
+    screen.primitives << fan_sprite
+  end
 
   Slime.update_rendered_state! state.slime, state.rendered_slime
   Camera.apply! camera, state.rendered_slime[:sprite]
