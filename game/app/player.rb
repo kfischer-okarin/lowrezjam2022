@@ -90,6 +90,7 @@ module Player
 
       if danger_collision
         health[:ticks_since_hurt] = 0
+        health[:current] -= 1
       else
         health[:ticks_since_hurt] += 1
       end

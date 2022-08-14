@@ -553,9 +553,35 @@ def test_player_should_be_hurt_when_running_into_the_slime(args, assert)
 
         break if player[:health][:ticks_since_hurt].zero?
       end
-    end
 
-    assert.ok!
+      assert.ok!
+    end
+  end
+end
+
+def test_player_should_lose_hp_when_running_into_the_slime(args, assert)
+  [
+    { position: { x: 0, y: 0 }, move: :right, slime_position: { x: 10, y: 0 } },
+    { position: { x: 0, y: 0 }, move: :left, slime_position: { x: -10, y: 0 } }
+  ].each do |test_case|
+    PlayerTests.test(args) do
+      with position: test_case[:position]
+
+      slime_is at: test_case[:slime_position]
+
+      current_hp_before = player[:health][:current]
+
+      safe_loop "Expected #{player_description} to be hurt, but he wasn't" do
+        input move: test_case[:move]
+
+        break if player[:health][:ticks_since_hurt].zero?
+      end
+
+      assert.equal! player[:health][:current],
+                    current_hp_before - 1,
+                    "Expected #{player_description} to lose 1 hp " \
+                    "when running to the #{test_case[:move]} into the slime"
+    end
   end
 end
 
