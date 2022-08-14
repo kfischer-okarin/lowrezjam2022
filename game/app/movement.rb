@@ -1,6 +1,7 @@
 module Movement
   class << self
     def apply!(entity, colliders)
+      handle_x_velocity(entity)
       apply_gravity(entity)
       x_movement = move_with_collision(entity, :x, colliders: colliders)
       y_movement = move_with_collision(entity, :y, colliders: colliders)
@@ -44,6 +45,14 @@ module Movement
     end
 
     private
+
+    def handle_x_velocity(entity)
+      velocity = entity[:velocity]
+      return if velocity[:x].zero?
+
+      entity[:movement][:x] += velocity[:x]
+      entity[:velocity][:x] = [(velocity[:x].abs - 0.2), 0].max * velocity[:x].sign
+    end
 
     def apply_gravity(entity)
       velocity = entity[:velocity]

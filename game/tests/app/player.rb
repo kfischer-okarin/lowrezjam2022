@@ -540,8 +540,8 @@ end
 
 def test_player_should_be_hurt_when_running_into_the_slime(args, assert)
   [
-    { position: { x: 0, y: 0 }, move: :right, slime_position: { x: 10, y: 0 } },
-    { position: { x: 0, y: 0 }, move: :left, slime_position: { x: -10, y: 0 } }
+    { position: { x: 0, y: 0 }, move: :right, slime_position: { x: 20, y: 0 } },
+    { position: { x: 0, y: 0 }, move: :left, slime_position: { x: -20, y: 0 } }
   ].each do |test_case|
     PlayerTests.test(args) do
       with position: test_case[:position]
@@ -561,8 +561,8 @@ end
 
 def test_player_should_lose_hp_when_running_into_the_slime(args, assert)
   [
-    { position: { x: 0, y: 0 }, move: :right, slime_position: { x: 10, y: 0 } },
-    { position: { x: 0, y: 0 }, move: :left, slime_position: { x: -10, y: 0 } }
+    { position: { x: 0, y: 0 }, move: :right, slime_position: { x: 20, y: 0 } },
+    { position: { x: 0, y: 0 }, move: :left, slime_position: { x: -20, y: 0 } }
   ].each do |test_case|
     PlayerTests.test(args) do
       with position: test_case[:position]
@@ -587,8 +587,8 @@ end
 
 def test_player_should_not_be_hurt_right_after_being_hurt(args, assert)
   [
-    { position: { x: 0, y: 0 }, move: :right, slime_position: { x: 10, y: 0 } },
-    { position: { x: 0, y: 0 }, move: :left, slime_position: { x: -10, y: 0 } }
+    { position: { x: 0, y: 0 }, move: :right, slime_position: { x: 20, y: 0 } },
+    { position: { x: 0, y: 0 }, move: :left, slime_position: { x: -20, y: 0 } }
   ].each do |test_case|
     PlayerTests.test(args) do
       with position: test_case[:position]
@@ -608,6 +608,52 @@ def test_player_should_not_be_hurt_right_after_being_hurt(args, assert)
                     "Expected #{player_description} to not be hurt twice in a row" \
                     "when running to the #{test_case[:move]} into the slime"
     end
+  end
+end
+
+def test_player_should_be_hurled_left_up_after_running_right_into_the_slime(args, assert)
+  PlayerTests.test(args) do
+    with position: { x: 0, y: 0 }
+
+    slime_is at: { x: 20, y: 0 }
+
+    safe_loop "Expected #{player_description} to be hurt, but he wasn't" do
+      input move: :right
+
+      break if player[:health][:ticks_since_hurt].zero?
+    end
+
+    position_before = player[:position].dup
+
+    5.times { no_input }
+
+    assert.true! player[:position][:x] < position_before[:x] && player[:position][:y] > position_before[:y],
+                 "Expected #{player_description} to be hurled left up " \
+                 'after running right into the slime but his position after 5 ticks ' \
+                 "was #{player[:position]}"
+  end
+end
+
+def test_player_should_be_hurled_right_up_after_running_left_into_the_slime(args, assert)
+  PlayerTests.test(args) do
+    with position: { x: 0, y: 0 }
+
+    slime_is at: { x: -20, y: 0 }
+
+    safe_loop "Expected #{player_description} to be hurt, but he wasn't" do
+      input move: :left
+
+      break if player[:health][:ticks_since_hurt].zero?
+    end
+
+    position_before = player[:position].dup
+
+    5.times { no_input }
+
+    assert.true! player[:position][:x] > position_before[:x] && player[:position][:y] > position_before[:y],
+                 "Expected #{player_description} to be hurled right up " \
+                 'after running left into the slime but his position after 5 ticks ' \
+                 "was #{player[:position]}"
   end
 end
 

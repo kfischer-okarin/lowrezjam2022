@@ -92,6 +92,9 @@ module Player
       if danger_collision && health[:ticks_since_hurt] >= INVINCIBLE_TICKS_AFTER_DAMAGE
         health[:ticks_since_hurt] = 0
         health[:current] -= 1
+        x_sign = danger_collision[:position][:x] > player[:position][:x] ? -1 : 1
+        player[:velocity][:x] = x_sign * PLAYER_HURT_SPEED_X
+        player[:velocity][:y] = PLAYER_HURT_SPEED_Y
       else
         health[:ticks_since_hurt] += 1
       end
