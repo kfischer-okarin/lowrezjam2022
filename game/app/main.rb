@@ -45,14 +45,14 @@ INVINCIBLE_TICKS_AFTER_DAMAGE = 120
 
 def tick(args)
   state = args.state
-  audio = args.audio
-  setup(state, audio) if args.tick_count.zero?
+  setup(args) if args.tick_count.zero?
   state.input_actions = InputActions.process_inputs(args.inputs)
   update(state)
-  render(state, args.outputs, audio)
+  render(state, args.outputs, args.audio)
 end
 
-def setup(state, audio)
+def setup(args)
+  state = args.state
   state.camera = Camera.build
 
   state.player = Player.build
@@ -60,6 +60,9 @@ def setup(state, audio)
   Movement.update_collider state.player
   Camera.follow_player! state.camera, state.player, immediately: true
   state.rendered_player = build_render_state load_animations('character')
+
+  # Use render target one time to avoid checkerboard artifacts on first render
+  white_sprite(args.outputs, state.rendered_player[:sprite], :blinking_player)
 
   state.slime = Slime.build
   state.slime[:position][:x] = STAGE_W - 20
@@ -98,6 +101,8 @@ def setup(state, audio)
       ] * INVINCIBLE_TICKS_AFTER_DAMAGE.idiv(4)
     )
   }
+
+  audio = args.audio
   audio[:fire] = {
     input: 'resources/fire.wav',
     looping: true,
