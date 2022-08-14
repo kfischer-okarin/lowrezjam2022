@@ -1,10 +1,10 @@
 [project]
-name = "gamename"
-title = "Game Name"
+name = "flamethrower_lowrez2022"
+title = "Unnamed Lowrez Flamethrower Game"
 version = "0.1.0"
 authors = ["Kevin Fischer"]
 icon = "metadata/icon.png"
-compile_ruby = false
+compile_ruby = true
 
 [dragonruby]
 version = "3.18"
