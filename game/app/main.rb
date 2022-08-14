@@ -249,13 +249,6 @@ def render_ui(outputs, state)
       health[:current] > i ? Colors::DawnBringer32::BRIGHT_RED : Colors::DawnBringer32::DARK_BROWN
     )
   }
-
-  health[:ticks_since_hurt] += 1
-  if $args.inputs.keyboard.key_down.f
-    health[:ticks_since_hurt] = 0
-    health[:current] -= 1
-  end
-
   return unless health[:ticks_since_hurt].zero?
 
   state.ui_running_animations << {

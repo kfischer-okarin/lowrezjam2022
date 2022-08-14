@@ -86,10 +86,13 @@ module Player
 
     def handle_dangers(player, dangers)
       danger_collision = Movement.check_collision(player, dangers)
-      return unless danger_collision
-
       health = player[:health]
-      health[:ticks_since_hurt] = 0
+
+      if danger_collision
+        health[:ticks_since_hurt] = 0
+      else
+        health[:ticks_since_hurt] += 1
+      end
     end
 
     def land(player, collider)

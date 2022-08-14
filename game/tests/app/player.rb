@@ -559,6 +559,18 @@ def test_player_should_be_hurt_when_running_into_the_slime(args, assert)
   end
 end
 
+def test_player_ticks_since_hurt_increase(args, assert)
+  PlayerTests.test(args) do
+    ticks_since_hurt_before = player[:health][:ticks_since_hurt]
+
+    no_input
+
+    assert.equal! player[:health][:ticks_since_hurt],
+                  ticks_since_hurt_before + 1,
+                  'Expected player to increase ticks_since_hurt by 1'
+  end
+end
+
 module PlayerTests
   class << self
     def test(args, &block)
