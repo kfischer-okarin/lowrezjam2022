@@ -39,13 +39,14 @@ CAMERA_MAX_Y = STAGE_H - SCREEN_H
 
 def tick(args)
   state = args.state
-  setup(state) if args.tick_count.zero?
-  render(state, args.outputs)
+  audio = args.audio
+  setup(state, audio) if args.tick_count.zero?
   state.input_actions = InputActions.process_inputs(args.inputs)
   update(state)
+  render(state, args.outputs, audio)
 end
 
-def setup(state)
+def setup(state, audio)
   state.camera = Camera.build
 
   state.player = Player.build
@@ -71,6 +72,11 @@ def setup(state)
         *([7, 6, 5, 4, 3, 2, 1].map { |w| { w: w, tile_w: w, duration: 4 } })
       ]
     )
+  }
+  audio[:fire] = {
+    input: 'resources/fire.wav',
+    looping: true,
+    paused: true
   }
 end
 
@@ -138,7 +144,7 @@ def load_animations(type)
   }
 end
 
-def render(state, outputs)
+def render(state, outputs, audio)
   screen = outputs[:screen]
   screen.background_color = [0x22, 0x20, 0x34]
   screen.width = SCREEN_W
@@ -162,6 +168,7 @@ def render(state, outputs)
     particle.merge! particle[:position]
     Camera.apply! camera, particle
   end
+  audio[:fire][:paused] = !state.player[:firing]
 
   screen.primitives << state.fire_particles
 
