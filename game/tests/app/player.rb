@@ -631,6 +631,11 @@ def test_player_should_be_hurled_left_up_after_running_right_into_the_slime(args
                  "Expected #{player_description} to be hurled left up " \
                  'after running right into the slime but his position after 5 ticks ' \
                  "was #{player[:position]}"
+    assert.equal! player[:state],
+                 :jump,
+                 "Expected #{player_description} to be falling " \
+                 'after running right into the slime but his position after 5 ticks ' \
+                 "but he was #{player[:state]}"
   end
 end
 
@@ -654,6 +659,11 @@ def test_player_should_be_hurled_right_up_after_running_left_into_the_slime(args
                  "Expected #{player_description} to be hurled right up " \
                  'after running left into the slime but his position after 5 ticks ' \
                  "was #{player[:position]}"
+    assert.equal! player[:state],
+                  :jump,
+                  "Expected #{player_description} to be falling " \
+                  'after running left into the slime but his position after 5 ticks ' \
+                  "but he was #{player[:state]}"
   end
 end
 

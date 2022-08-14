@@ -24,7 +24,7 @@ module Player
       movement_result = Movement.apply!(player, state.colliders)
       handle_dangers(player, state.dangers)
       land(player, movement_result[:collisions][:down]) if movement_result[:collisions][:down]
-      start_falling(player) if movement_result[:position_change][:y].negative?
+      start_falling(player) unless movement_result[:position_change][:y].zero?
       stop_vertical_movement(player) if movement_result[:collisions][:up]
     end
 
