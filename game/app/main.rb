@@ -79,6 +79,7 @@ def setup(state, audio)
   state.dangers = [state.slime]
 
   state.fire_particles = []
+  state.additional_sprite_animations = []
   state.ui_running_animations = []
   state.animations = {
     health_down: Animations.build(
@@ -87,6 +88,12 @@ def setup(state, audio)
         { duration: 30 },
         *([7, 6, 5, 4, 3, 2, 1].map { |w| { w: w, tile_w: w, duration: 4 } })
       ]
+    ),
+    invincible_blink: Animations.build(
+      frames: [
+        { a: 0, duration: 2 },
+        { a: 255, duration: 2 }
+      ] * INVINCIBLE_TICKS_AFTER_DAMAGE.idiv(4)
     )
   }
   audio[:fire] = {
@@ -179,6 +186,14 @@ def render(state, outputs, audio)
     audio[:hurt] = {
       input: 'resources/hurt.wav'
     }
+    state.additional_sprite_animations << {
+      sprite: state.rendered_player[:sprite],
+      animation_state: Animations.start!(
+        state.rendered_player[:sprite],
+        animation: state.animations[:invincible_blink],
+        repeat: false
+      )
+    }
   end
   Camera.update_shake! state.camera
 
@@ -214,10 +229,15 @@ def render(state, outputs, audio)
 
   screen.primitives << state.fire_particles
 
+  update_one_time_animations(screen, state.additional_sprite_animations)
+
   render_colliders(screen, camera, state) if $debug.debug_mode?
 
   render_ui(screen, state)
-  update_ui_animations(screen, state.ui_running_animations)
+  update_one_time_animations(screen, state.ui_running_animations)
+  state.ui_running_animations.each do |animation|
+    screen.primitives << animation[:sprite]
+  end
 
   outputs.background_color = [0, 0, 0]
   outputs.primitives << { x: 288, y: 8, w: 704, h: 704, path: :screen }.sprite!
@@ -268,11 +288,10 @@ def render_ui(outputs, state)
   }
 end
 
-def update_ui_animations(outputs, running_animations)
+def update_one_time_animations(outputs, running_animations)
   running_animations.each do |running_animation|
     Animations.next_tick running_animation[:animation_state]
     Animations.apply! running_animation[:sprite], animation_state: running_animation[:animation_state]
-    outputs.primitives << running_animation[:sprite]
   end
 
   running_animations.reject! { |running_animation|
