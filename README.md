@@ -18,3 +18,6 @@
   - Shooting projectiles
   - Flinging itself around like a crazy rubber billard ball
   - Engulfing the whole room making only middle platforms available
+
+## Credits
+- Machine Rotation by Taira Komori: https://taira-komori.jpn.org/sf01.html (機械の低速回転)

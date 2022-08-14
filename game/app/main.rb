@@ -78,6 +78,11 @@ def setup(state, audio)
     looping: true,
     paused: true
   }
+  audio[:background] = {
+    input: 'resources/machine_rotation.ogg',
+    looping: true,
+    gain: 0
+  }
 end
 
 def build_render_state(animations)
@@ -168,6 +173,10 @@ def render(state, outputs, audio)
     particle.merge! particle[:position]
     Camera.apply! camera, particle
   end
+  # Smoothly fade in the background music
+  audio[:background][:gain] += 0.01 if audio[:background][:gain] < 1
+  # OGG file does not loop cleanly so manual loop
+  audio[:background][:playtime] = 1 if (audio[:background][:playtime] || 0) >= 13.5
   audio[:fire][:paused] = !state.player[:firing]
 
   screen.primitives << state.fire_particles
