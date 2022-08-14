@@ -51,7 +51,7 @@ module Movement
       return if velocity[:x].zero?
 
       entity[:movement][:x] += velocity[:x]
-      entity[:velocity][:x] = [(velocity[:x].abs - 0.2), 0].max * velocity[:x].sign
+      entity[:velocity][:x] = [(velocity[:x].abs - GRAVITY), 0].max * velocity[:x].sign
     end
 
     def apply_gravity(entity)
