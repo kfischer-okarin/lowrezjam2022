@@ -36,6 +36,8 @@ CAMERA_MIN_X = 0
 CAMERA_MAX_X = STAGE_W - SCREEN_W
 CAMERA_MIN_Y = -5
 CAMERA_MAX_Y = STAGE_H - SCREEN_H
+MAX_SCREEN_SHAKE = 10
+SCREEN_SHAKE_DECAY = 0.01
 
 def tick(args)
   state = args.state
@@ -301,6 +303,8 @@ def update(state)
   Player.update!(player, state)
   handle_firethrower(player, state.fire_particles)
   Camera.follow_player! state.camera, player
+  state.camera[:shake][:trauma] += 0.1 if $args.inputs.keyboard.key_down.g
+  Camera.update_shake! state.camera
   Slime.update! state.slime, state
 end
 
