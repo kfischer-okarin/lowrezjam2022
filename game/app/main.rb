@@ -74,6 +74,7 @@ def setup(state, audio)
   }
 
   state.colliders = get_stage_bounds + load_colliders
+  state.dangers = [state.slime]
 
   state.fire_particles = []
   state.ui_running_animations = []
@@ -254,7 +255,6 @@ def render_ui(outputs, state)
     health[:ticks_since_hurt] = 0
     health[:current] -= 1
   end
-
 
   return unless health[:ticks_since_hurt].zero?
 

@@ -22,6 +22,7 @@ module Player
       update_face_direction(player, input_actions)
       update_movement(player, input_actions)
       movement_result = Movement.apply!(player, state.colliders)
+      handle_dangers(player, state.dangers)
       land(player, movement_result[:collisions][:down]) if movement_result[:collisions][:down]
       start_falling(player) if movement_result[:position_change][:y].negative?
       stop_vertical_movement(player) if movement_result[:collisions][:up]
@@ -81,6 +82,14 @@ module Player
       else
         player[:movement][:x] = 0
       end
+    end
+
+    def handle_dangers(player, dangers)
+      danger_collision = Movement.check_collision(player, dangers)
+      return unless danger_collision
+
+      health = player[:health]
+      health[:ticks_since_hurt] = 0
     end
 
     def land(player, collider)

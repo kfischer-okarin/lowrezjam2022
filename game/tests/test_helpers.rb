@@ -50,6 +50,7 @@ module TestHelpers
 
       @player = Player.build
       @initial_attributes = nil
+      @args.state.dangers = []
     end
 
     def with(initial_attributes)
@@ -70,6 +71,14 @@ module TestHelpers
 
     def no_input
       input({})
+    end
+
+    def slime_is(at:)
+      slime = Slime.build
+      slime[:position] = at
+      Movement.update_collider slime
+      @args.state.slime = slime
+      @args.state.dangers << slime
     end
 
     def player_description

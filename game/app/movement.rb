@@ -37,6 +37,12 @@ module Movement
       collider[:h] = collider_bounds[:h]
     end
 
+    def check_collision(entity, colliders)
+      colliders.find { |collider|
+        entity[:collider].intersect_rect? collider[:collider]
+      }
+    end
+
     private
 
     def apply_gravity(entity)
@@ -78,12 +84,6 @@ module Movement
       {
         collisions: collisions,
         change: change
-      }
-    end
-
-    def check_collision(entity, colliders)
-      colliders.find { |collider|
-        entity[:collider].intersect_rect? collider[:collider]
       }
     end
 
