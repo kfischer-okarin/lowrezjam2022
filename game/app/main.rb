@@ -174,7 +174,12 @@ def render(state, outputs, audio)
   player = state.player
   camera = state.camera
 
-  camera[:shake][:trauma] += 0.2 if player[:health][:ticks_since_hurt].zero?
+  if player[:health][:ticks_since_hurt].zero?
+    camera[:shake][:trauma] += 0.2
+    audio[:hurt] = {
+      input: 'resources/hurt.wav'
+    }
+  end
   Camera.update_shake! state.camera
 
   stage_sprite = { x: 0, y: -5, w: STAGE_W, h: STAGE_H, path: 'resources/stage/png/Level_0.png' }.sprite!
