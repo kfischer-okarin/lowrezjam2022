@@ -171,7 +171,11 @@ def render(state, outputs, audio)
   screen.width = SCREEN_W
   screen.height = SCREEN_H
 
+  player = state.player
   camera = state.camera
+
+  camera[:shake][:trauma] += 0.2 if player[:health][:ticks_since_hurt].zero?
+  Camera.update_shake! state.camera
 
   stage_sprite = { x: 0, y: -5, w: STAGE_W, h: STAGE_H, path: 'resources/stage/png/Level_0.png' }.sprite!
   Camera.apply! camera, stage_sprite
@@ -189,7 +193,7 @@ def render(state, outputs, audio)
   Camera.apply! camera, state.rendered_slime[:sprite]
   screen.primitives << state.rendered_slime[:sprite]
 
-  Player.update_rendered_state! state.player, state.rendered_player
+  Player.update_rendered_state! player, state.rendered_player
   Camera.apply! camera, state.rendered_player[:sprite]
   screen.primitives << state.rendered_player[:sprite]
 
@@ -201,7 +205,7 @@ def render(state, outputs, audio)
   audio[:background][:gain] += 0.01 if audio[:background][:gain] < 1
   # OGG file does not loop cleanly so manual loop
   audio[:background][:playtime] = 1 if (audio[:background][:playtime] || 0) >= 13.5
-  audio[:fire][:paused] = !state.player[:firing]
+  audio[:fire][:paused] = !player[:firing]
 
   screen.primitives << state.fire_particles
 
@@ -298,8 +302,6 @@ def update(state)
   Player.update!(player, state)
   handle_firethrower(player, state.fire_particles)
   Camera.follow_player! state.camera, player
-  state.camera[:shake][:trauma] += 0.1 if $args.inputs.keyboard.key_down.g
-  Camera.update_shake! state.camera
   Slime.update! state.slime, state
 end
 
