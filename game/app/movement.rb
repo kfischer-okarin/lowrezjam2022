@@ -40,8 +40,9 @@ module Movement
     private
 
     def apply_gravity(entity)
-      entity[:movement][:y] += entity[:y_velocity]
-      entity[:y_velocity] = [entity[:y_velocity] - GRAVITY, -MAX_FALL_VELOCITY].max
+      velocity = entity[:velocity]
+      entity[:movement][:y] += velocity[:y]
+      velocity[:y] = [velocity[:y] - GRAVITY, -MAX_FALL_VELOCITY].max
     end
 
     def move_with_collision(entity, dimension, colliders:)

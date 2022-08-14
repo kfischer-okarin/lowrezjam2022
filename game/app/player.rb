@@ -4,9 +4,9 @@ module Player
       {
         position: { x: 0, y: 0 },
         movement: { x: 0, y: 0 },
+        velocity: { x: 0, y: 0 },
         collider_bounds: { x: -4, y: 0, w: 10, h: 23 },
         collider: {},
-        y_velocity: 0,
         state: :idle,
         firing: false,
         face_direction: :right,
@@ -49,13 +49,13 @@ module Player
         start_jump(player) if input_actions[:jump] && player[:can_jump]
         player[:can_jump] = true unless input_actions[:jump]
       when :jump
-        player[:y_velocity] += PLAYER_JUMP_ACCELERATION if input_actions[:jump] && player[:y_velocity].positive?
+        player[:velocity][:y] += PLAYER_JUMP_ACCELERATION if input_actions[:jump] && player[:velocity][:y].positive?
       end
     end
 
     def start_jump(player)
       start_falling(player)
-      player[:y_velocity] = PLAYER_JUMP_SPEED
+      player[:velocity][:y] = PLAYER_JUMP_SPEED
     end
 
     def start_falling(player)
@@ -92,7 +92,7 @@ module Player
     end
 
     def stop_vertical_movement(player)
-      player[:y_velocity] = 0
+      player[:velocity][:y] = 0
       player[:movement][:y] = 0
     end
   end

@@ -440,12 +440,12 @@ end
 def test_player_should_have_maximum_falling_speed(args, assert)
   PlayerTests.test(args) do
     with state: :jump, position: { x: 0, y: 50 }
-    last_y_velocity = player[:y_velocity]
+    last_y_velocity = player[:velocity][:y]
 
     safe_loop "Expected #{player_description} to reach maximum speed, but he didn't" do
       no_input
 
-      y_velocity = player[:y_velocity]
+      y_velocity = player[:velocity][:y]
 
       break if y_velocity == last_y_velocity
 
@@ -532,7 +532,7 @@ def test_player_should_immediately_fall_when_hitting_colliders_from_below(args, 
 
     no_input
 
-    assert.true! player[:y_velocity].negative?,
+    assert.true! player[:velocity][:y].negative?,
                   "Expected #{player_description} to fall immediately after hitting the collider, " \
                   "but his y position was #{player[:position][:y]}"
   end

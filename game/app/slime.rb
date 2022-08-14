@@ -4,7 +4,7 @@ module Slime
       {
         position: { x: 0, y: 0 },
         movement: { x: 0, y: 0 },
-        y_velocity: 0,
+        velocity: { x: 0, y: 0 },
         collider_bounds: { x: -5, y: 0, w: 12, h: 8 },
         collider: {},
         state: :move,
