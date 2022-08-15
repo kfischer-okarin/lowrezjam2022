@@ -50,12 +50,30 @@ INVINCIBLE_TICKS_AFTER_DAMAGE = 120
 def tick(args)
   state = args.state
   setup(args) if args.tick_count.zero?
-  state.input_actions = InputActions.process_inputs(args.inputs)
-  update(state)
-  render(state, args.outputs, args.audio)
+  send(:"#{state.scene}_tick", args)
+  state.ticks_in_scene += 1
 end
 
 def setup(args)
+  state = args.state
+  change_to_scene state, :game
+  state.ticks_in_scene = 0
+end
+
+def change_to_scene(state, scene)
+  state.scene = scene
+  state.ticks_in_scene = -1
+end
+
+def game_tick(args)
+  state = args.state
+  game_setup(args) if state.ticks_in_scene.zero?
+  state.input_actions = InputActions.process_inputs(args.inputs)
+  game_update(state)
+  game_render(state, args.outputs, args.audio)
+end
+
+def game_setup(args)
   state = args.state
   state.camera = Camera.build
 
@@ -184,7 +202,7 @@ def load_animations(type)
   }
 end
 
-def render(state, outputs, audio)
+def game_render(state, outputs, audio)
   screen = outputs[:screen]
   screen.background_color = [0x22, 0x20, 0x34]
   screen.width = SCREEN_W
@@ -350,7 +368,7 @@ def white_sprite(outputs, sprite, render_target_name)
   { x: sprite[:x], y: sprite[:y], w: sprite[:w], h: sprite[:h], path: render_target_name }.sprite!
 end
 
-def update(state)
+def game_update(state)
   player = state.player
   Player.update!(player, state)
   handle_firethrower(state)
