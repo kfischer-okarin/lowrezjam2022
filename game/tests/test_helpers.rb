@@ -193,6 +193,7 @@ module TestHelpers
       super
 
       @slime = Slime.build
+      Movement.update_collider @slime
       @initial_attributes = nil
       @args.state.hotmap = Hotmap.build
       @args.state.fire_particles = []
@@ -211,10 +212,11 @@ module TestHelpers
       next_tick
     end
 
-    def fire_particle(at:, state: nil)
-      particle = FireParticle.build(x: at[:x], y: at[:y], direction: :right)
-      particle[:state] = state if state
+    def fire_particle(position:, direction: :right, **attributes)
+      particle = FireParticle.build(x: position[:x], y: position[:y], direction: direction)
+      particle.merge! attributes
       @args.state.fire_particles << particle
+
       Hotmap.update! @args.state.hotmap, @args.state.fire_particles
     end
 

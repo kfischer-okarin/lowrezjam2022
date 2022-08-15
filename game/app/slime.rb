@@ -15,7 +15,7 @@ module Slime
 
     def update!(slime, state)
       handle_basic_movement(slime, state)
-      handle_fire(slime, state.hotmap)
+      handle_fire(slime, state)
     end
 
     def update_rendered_state!(slime, rendered_state)
@@ -43,9 +43,16 @@ module Slime
       end
     end
 
-    def handle_fire(slime, hotmap)
+    def handle_fire(slime, state)
+      hotmap = state.hotmap
+      health = slime[:health]
       if Hotmap.rect_inside?(hotmap, slime[:collider])
-        slime[:health][:ticks_since_hurt] = 0
+        health[:ticks_since_hurt] = 0
+        moving_fire_particle = state.fire_particles.find { |particle| particle[:velocity][:x].nonzero? }
+        x_sign = moving_fire_particle[:velocity][:x].sign
+        slime[:velocity][:x] = x_sign * PLAYER_HURT_SPEED_X
+      else
+        health[:ticks_since_hurt] += 1
       end
     end
   end
