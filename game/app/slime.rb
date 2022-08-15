@@ -20,7 +20,7 @@ module Slime
         wander(slime)
       when :prepare_attack
         slime[:attack][:preparing_ticks] += 1
-        fly_towards(slime, state.player) if slime[:attack][:preparing_ticks] >= 120
+        fly_towards(slime, state.player) if slime[:attack][:preparing_ticks] >= 90
       when :flying
         slime[:attack][:flying_ticks] += 1
         slime[:state] = :move if slime[:attack][:flying_ticks] >= 120
