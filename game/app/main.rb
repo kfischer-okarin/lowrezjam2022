@@ -70,7 +70,9 @@ def game_tick(args)
   game_setup(args) if state.ticks_in_scene.zero?
   state.input_actions = InputActions.process_inputs(args.inputs)
   game_update(state)
-  game_render(state, args.outputs, args.audio)
+  render_lowrez(args.outputs) do |screen|
+    game_render(state, screen, args.audio)
+  end
 end
 
 def game_setup(args)
@@ -203,10 +205,7 @@ def load_animations(type)
 end
 
 def game_render(state, outputs, audio)
-  screen = outputs[:screen]
-  screen.background_color = [0x22, 0x20, 0x34]
-  screen.width = SCREEN_W
-  screen.height = SCREEN_H
+  outputs.background_color = [0x22, 0x20, 0x34]
 
   player = state.player
   camera = state.camera
@@ -229,25 +228,25 @@ def game_render(state, outputs, audio)
 
   stage_sprite = { x: 0, y: -5, w: STAGE_W, h: STAGE_H, path: 'resources/stage/png/Level_0.png' }.sprite!
   Camera.apply! camera, stage_sprite
-  screen.primitives << stage_sprite
+  outputs.primitives << stage_sprite
 
   state.fans.each do |fan|
     fan_sprite = fan[:sprite]
     fan_sprite.merge! fan[:position]
     update_animation fan
     Camera.apply! camera, fan_sprite
-    screen.primitives << fan_sprite
+    outputs.primitives << fan_sprite
   end
 
   Slime.update_rendered_state! state.slime, state.rendered_slime
   Camera.apply! camera, state.rendered_slime[:sprite]
-  screen.primitives << state.rendered_slime[:sprite]
+  outputs.primitives << state.rendered_slime[:sprite]
 
   Player.update_rendered_state! player, state.rendered_player
   player_sprite = state.rendered_player[:sprite]
   player_sprite = white_sprite(outputs, player_sprite, :blinking_player) if player[:health][:ticks_since_hurt] < 10
   Camera.apply! camera, player_sprite
-  screen.primitives << player_sprite
+  outputs.primitives << player_sprite
 
   state.fire_particles.each do |particle|
     particle.merge! particle[:position]
@@ -259,21 +258,28 @@ def game_render(state, outputs, audio)
   audio[:background][:playtime] = 1 if (audio[:background][:playtime] || 0) >= 13.5
   audio[:fire][:paused] = !player[:firing]
 
-  screen.primitives << state.fire_particles
+  outputs.primitives << state.fire_particles
 
-  update_one_time_animations(screen, state.additional_sprite_animations)
+  update_one_time_animations(outputs, state.additional_sprite_animations)
 
   if $debug.debug_mode?
-    render_colliders(screen, camera, state)
-    render_hotmap(screen, camera, state)
+    render_colliders(outputs, camera, state)
+    render_hotmap(outputs, camera, state)
   end
 
-  render_ui(screen, state)
-  update_one_time_animations(screen, state.ui_running_animations)
+  render_ui(outputs, state)
+  update_one_time_animations(outputs, state.ui_running_animations)
   state.ui_running_animations.each do |animation|
-    screen.primitives << animation[:sprite]
+    outputs.primitives << animation[:sprite]
   end
+end
 
+def render_lowrez(outputs)
+  screen = outputs[:screen]
+  screen.background_color = [0, 0, 0]
+  screen.width = SCREEN_W
+  screen.height = SCREEN_H
+  yield screen
   outputs.background_color = [0, 0, 0]
   outputs.primitives << { x: 288, y: 8, w: 704, h: 704, path: :screen }.sprite!
 end
