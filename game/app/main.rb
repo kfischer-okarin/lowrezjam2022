@@ -6,6 +6,7 @@ require 'lib/resources.rb'
 require 'app/camera.rb'
 require 'app/colors.rb'
 require 'app/fire_particle.rb'
+require 'app/hotmap.rb'
 require 'app/input_actions.rb'
 require 'app/movement.rb'
 require 'app/player.rb'
@@ -23,6 +24,7 @@ PLAYER_FIRING_SLOWDOWN = 0.4
 PLAYER_JUMP_SPEED = 2.2
 PLAYER_JUMP_ACCELERATION = 0.08
 FIRE_PARTICLE_INITIAL_SPEED = 1.8
+HOTMAP_TILE_SIZE = 4
 PLAYER_HURT_SPEED_X = 3
 PLAYER_HURT_SPEED_Y = 3
 
@@ -83,6 +85,7 @@ def setup(args)
   state.colliders = get_stage_bounds + load_colliders
   state.dangers = [state.slime]
 
+  state.hotmap = Hotmap.build
   state.fire_particles = []
   state.additional_sprite_animations = []
   state.ui_running_animations = []
@@ -240,7 +243,10 @@ def render(state, outputs, audio)
 
   update_one_time_animations(screen, state.additional_sprite_animations)
 
-  render_colliders(screen, camera, state) if $debug.debug_mode?
+  if $debug.debug_mode?
+    render_colliders(screen, camera, state)
+    render_hotmap(screen, camera, state)
+  end
 
   render_ui(screen, state)
   update_one_time_animations(screen, state.ui_running_animations)
@@ -278,6 +284,18 @@ def render_collider(outputs, camera, entity)
   rect = entity[:collider].to_border r: 255, g: 0, b: 0
   Camera.apply! camera, rect
   outputs.primitives << rect
+end
+
+def render_hotmap(outputs, camera, state)
+  state.hotmap.each do |x, y_values|
+    y_values.each_key do |y|
+      rect = {
+        x: x * HOTMAP_TILE_SIZE, y: y * HOTMAP_TILE_SIZE, w: HOTMAP_TILE_SIZE, h: HOTMAP_TILE_SIZE
+      }.to_border r: 255, g: 255, b: 255
+      Camera.apply! camera, rect
+      outputs.primitives << rect
+    end
+  end
 end
 
 def render_ui(outputs, state)
@@ -333,17 +351,22 @@ end
 def update(state)
   player = state.player
   Player.update!(player, state)
-  handle_firethrower(player, state.fire_particles)
+  handle_firethrower(state)
   Camera.follow_player! state.camera, player
   Slime.update! state.slime, state
 end
 
-def handle_firethrower(player, fire_particles)
+def handle_firethrower(state)
+  player = state.player
+  fire_particles = state.fire_particles
+
   fire_particles.reject! { |particle| particle[:state] == :gone }
 
   fire_particles.each do |particle|
     FireParticle.update! particle
   end
+
+  Hotmap.update! state.hotmap, fire_particles
 
   return unless player[:firing]
 

@@ -183,4 +183,41 @@ module TestHelpers
       "particles going #{@particle_direction}"
     end
   end
+
+  class SlimeDSL < DSL::Base
+    include DSL::Colliders
+
+    attr_reader :slime
+
+    def initialize(args)
+      super
+
+      @slime = Slime.build
+      @initial_attributes = nil
+      @args.state.hotmap = Hotmap.build
+      @args.state.fire_particles = []
+    end
+
+    def with(initial_attributes)
+      @initial_attributes = initial_attributes
+      @initial_attributes.each do |attribute, value|
+        slime[attribute] = value.dup
+      end
+      Movement.update_collider @slime
+    end
+
+    def update
+      Slime.update! @slime, @args.state
+      next_tick
+    end
+
+    def fire_particle(at:)
+      @args.state.fire_particles << FireParticle.build(x: at[:x], y: at[:y], direction: :right)
+      Hotmap.update! @args.state.hotmap, @args.state.fire_particles
+    end
+
+    def slime_description
+      "slime with #{@initial_attributes}"
+    end
+  end
 end
