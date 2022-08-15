@@ -170,6 +170,38 @@ def test_slime_should_eventually_stop_flying(args, assert)
   end
 end
 
+def test_slime_should_bounce_away_when_flying_into_collider_to_the_right(args, assert)
+  SlimeTests.test(args) do
+    collider_at x: 50, y: 0, w: 10, h: 30
+
+    Slime.fly_towards slime, { position: { x: 100, y: 0 } }
+
+    safe_loop "Expected #{slime_description} to bounce to the left but it never did" do
+      update
+
+      break if slime[:velocity][:x].negative?
+    end
+
+    assert.ok!
+  end
+end
+
+def test_slime_should_bounce_away_when_flying_into_collider_to_the_left(args, assert)
+  SlimeTests.test(args) do
+    collider_at x: -50, y: 0, w: 10, h: 30
+
+    Slime.fly_towards slime, { position: { x: -100, y: 0 } }
+
+    safe_loop "Expected #{slime_description} to bounce to the right but it never did" do
+      update
+
+      break if slime[:velocity][:x].positive?
+    end
+
+    assert.ok!
+  end
+end
+
 def test_slime_should_not_sink_when_stopping_flying(args, assert)
   [
     { target: { position: { x: 100, y: 0 } } },
