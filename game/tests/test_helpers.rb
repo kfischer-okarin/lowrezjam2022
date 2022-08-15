@@ -211,8 +211,10 @@ module TestHelpers
       next_tick
     end
 
-    def fire_particle(at:)
-      @args.state.fire_particles << FireParticle.build(x: at[:x], y: at[:y], direction: :right)
+    def fire_particle(at:, state: nil)
+      particle = FireParticle.build(x: at[:x], y: at[:y], direction: :right)
+      particle[:state] = state if state
+      @args.state.fire_particles << particle
       Hotmap.update! @args.state.hotmap, @args.state.fire_particles
     end
 

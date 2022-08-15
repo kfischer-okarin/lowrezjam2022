@@ -7,6 +7,8 @@ module Hotmap
     def update!(hotmap, particles)
       hotmap.each_value(&:clear)
       particles.each do |particle|
+        next unless particle[:state] == :fire
+
         hotmap_x = to_hotmap_coordinate particle[:position][:x]
         hotmap_y = to_hotmap_coordinate particle[:position][:y]
         hotmap[hotmap_x] ||= {}
