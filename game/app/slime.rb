@@ -49,8 +49,8 @@ module Slime
     def fly_towards(slime, entity)
       slime[:state] = :flying
       dx = entity[:position][:x] - slime[:position][:x]
+      slime[:face_direction] = dx > 0 ? :right : :left
       slime[:velocity][:x] = dx.sign * 3
-      # slime[:face_direction] = dx > 0 ? :right : :left
     end
 
     def handle_movement(slime, state)

@@ -62,14 +62,15 @@ def test_slime_should_prepare_attack_when_hurt(args, assert)
   end
 end
 
-def test_slime_should_fly_left_towards_player_after_preparing_to_attack(args, assert)
+def test_slime_should_fly_towards_player_after_preparing_to_attack(args, assert)
   [
-    { x: -15, y: 0 },
-    { x: 15, y: 0 }
-  ].each do |player_position|
+    { player_position: { x: -15, y: 0 }, face_direction: :left },
+    { player_position: { x: 15, y: 0 }, face_direction: :right }
+  ].each do |test_case|
     SlimeTests.test(args) do
       with state: :prepare_attack, position: { x: 0, y: 0 }
 
+      player_position = test_case[:player_position]
       player_with position: player_position
 
       safe_loop "Expected #{slime_description} to start flying but it wasn't" do
@@ -86,6 +87,11 @@ def test_slime_should_fly_left_towards_player_after_preparing_to_attack(args, as
                     "Expected #{slime_description} to fly towards the player " \
                     "at #{player_position} but it didn't. Its position was " \
                     "#{slime[:position]}"
+      assert.equal! slime[:face_direction],
+                    test_case[:face_direction],
+                    "Expected #{slime_description} to have face direction " \
+                    "at #{test_case[:face_direction]} but it didn't. It was " \
+                    "#{slime[:face_direction]}"
     end
   end
 end
