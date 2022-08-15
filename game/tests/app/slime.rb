@@ -170,8 +170,6 @@ def test_slime_should_eventually_stop_flying(args, assert)
   end
 end
 
-# TODO BOUNCE WHILE FLYING
-
 def test_slime_should_not_sink_when_stopping_flying(args, assert)
   [
     { target: { position: { x: 100, y: 0 } } },
