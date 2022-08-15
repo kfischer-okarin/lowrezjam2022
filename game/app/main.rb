@@ -75,6 +75,26 @@ def game_tick(args)
   end
 end
 
+def lose_tick(args)
+  state = args.state
+  if any_key?(args.inputs)
+    change_to_scene state, :game
+  end
+
+  render_lowrez(args.outputs) do |screen|
+    ['You lose!', 'Press any', 'key to', 'retry...'].each_with_index do |text, index|
+      screen.primitives << {
+        x: 32, y: 48 - 12 * index, text: text, alignment_enum: 1, vertical_alignment_enum: 1, size_enum: -6,
+        font: 'resources/vector.ttf', r: 255, g: 255, b: 255
+      }.label!
+    end
+  end
+end
+
+def any_key?(inputs)
+  inputs.keyboard.key_down.truthy_keys.length > 0 || inputs.controller_one.key_down.truthy_keys.length > 0
+end
+
 def game_setup(args)
   state = args.state
   state.camera = Camera.build
@@ -380,6 +400,7 @@ def game_update(state)
   handle_firethrower(state)
   Camera.follow_player! state.camera, player
   Slime.update! state.slime, state
+  handle_game_end(state)
 end
 
 def handle_firethrower(state)
@@ -403,6 +424,12 @@ def handle_firethrower(state)
       y: player[:position][:y] + 9 - i,
       direction: player[:face_direction]
     )
+  end
+end
+
+def handle_game_end(state)
+  if state.player[:health][:current] <= 0
+    change_to_scene state, :lose
   end
 end
 

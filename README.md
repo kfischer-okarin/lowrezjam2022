@@ -6,7 +6,12 @@
 - [x] Hit platform with head
 - [x] Falling state when falling
 - [x] Flamethrower
+- [x] Lose state
+- [ ] Slime invincibility
+- [ ] Slime HP
+- [ ] Slime dies
 - [ ] Slime enemy
+- [ ] Win
 - [ ] Flamethrower damage
 - [ ] Slime damage
 - [ ] Win/Lose state
