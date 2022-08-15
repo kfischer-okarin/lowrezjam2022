@@ -197,6 +197,7 @@ module TestHelpers
       super
 
       @slime = Slime.build
+      @rendered_slime = build_render_state load_animations('slime')
       Movement.update_collider @slime
       @initial_attributes = nil
       @args.state.hotmap = Hotmap.build
@@ -217,6 +218,7 @@ module TestHelpers
 
     def update
       Slime.update! @slime, @args.state
+      Slime.update_rendered_state! @slime, @rendered_slime
       next_tick
     end
 

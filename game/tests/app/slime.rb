@@ -96,6 +96,24 @@ def test_slime_should_fly_towards_player_after_preparing_to_attack(args, assert)
   end
 end
 
+def test_slime_should_not_be_affected_by_gravity_when_flying(args, assert)
+  [
+    { velocity: { x: 3, y: 0 } },
+    { velocity: { x: -3, y: 0 } }
+  ].each do |test_case|
+    SlimeTests.test(args) do
+      with state: :flying, position: { x: 0, y: 15 }, velocity: test_case[:velocity]
+
+      5.times { update }
+
+      assert.equal! slime[:position][:y],
+                    15,
+                    "Expected #{slime_description} to have not been affected by gravity " \
+                    "but its position was #{slime[:position]}"
+    end
+  end
+end
+
 def test_slime_should_not_be_hurt_when_close_to_a_smoke_particle(args, assert)
   SlimeTests.test(args) do
     with position: { x: 0, y: 0 }

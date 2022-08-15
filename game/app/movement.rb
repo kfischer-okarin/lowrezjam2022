@@ -2,7 +2,7 @@ module Movement
   class << self
     def apply!(entity, colliders)
       handle_x_velocity(entity)
-      apply_gravity(entity)
+      apply_gravity(entity) unless entity[:state] == :flying
       x_movement = move_with_collision(entity, :x, colliders: colliders)
       y_movement = move_with_collision(entity, :y, colliders: colliders)
 
