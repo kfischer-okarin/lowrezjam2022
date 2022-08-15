@@ -105,9 +105,6 @@ def game_setup(args)
   Camera.follow_player! state.camera, state.player, immediately: true
   state.rendered_player = build_render_state load_animations('character')
 
-  # Use render target one time to avoid checkerboard artifacts on first render
-  white_sprite(args.outputs, state.rendered_player[:sprite], :blinking_player)
-
   state.slime = Slime.build
   state.slime[:position][:x] = STAGE_W - 20
   Movement.update_collider state.slime
@@ -123,6 +120,10 @@ def game_setup(args)
       rendered_fan[:next_animation] = :fan_rotation
     }
   }
+
+  # Use render target one time to avoid checkerboard artifacts on first render
+  white_sprite(args.outputs, state.rendered_player[:sprite], :blinking_player)
+  white_sprite(args.outputs, state.rendered_slime[:sprite], :blinking_slime)
 
   state.colliders = get_stage_bounds + load_colliders
   state.dangers = [state.slime]
@@ -258,9 +259,28 @@ def game_render(state, outputs, audio)
     outputs.primitives << fan_sprite
   end
 
-  Slime.update_rendered_state! state.slime, state.rendered_slime
-  Camera.apply! camera, state.rendered_slime[:sprite]
-  outputs.primitives << state.rendered_slime[:sprite]
+  slime = state.slime
+
+  if slime[:health][:ticks_since_hurt].zero?
+    audio[:slime_hurt] = {
+      input: 'resources/hurt.wav',
+      pitch: 0.5
+    }
+    state.additional_sprite_animations << {
+      sprite: state.rendered_slime[:sprite],
+      animation_state: Animations.start!(
+        state.rendered_slime[:sprite],
+        animation: state.animations[:invincible_blink],
+        repeat: false
+      )
+    }
+  end
+
+  Slime.update_rendered_state! slime, state.rendered_slime
+  slime_sprite = state.rendered_slime[:sprite]
+  slime_sprite = white_sprite(outputs, slime_sprite, :blinking_player) if slime[:health][:ticks_since_hurt] < 10
+  Camera.apply! camera, slime_sprite
+  outputs.primitives << slime_sprite
 
   Player.update_rendered_state! player, state.rendered_player
   player_sprite = state.rendered_player[:sprite]

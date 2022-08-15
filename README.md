@@ -8,7 +8,7 @@
 - [x] Flamethrower
 - [x] Lose state
 - [x] Slime invincibility
-- [ ] Slime blink
+- [x] Slime blink
 - [ ] Slime HP
 - [ ] Slime dies
 - [ ] Slime enemy
