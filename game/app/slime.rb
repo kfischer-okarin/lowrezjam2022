@@ -47,7 +47,7 @@ module Slime
       slime[:state] = :flying
       dx = entity[:position][:x] - slime[:position][:x]
       slime[:face_direction] = dx > 0 ? :right : :left
-      slime[:velocity][:x] = dx.sign * 3
+      slime[:velocity][:x] = dx.sign * 1.5
       slime[:attack] = { flying_ticks: 0 }
     end
 

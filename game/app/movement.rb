@@ -53,6 +53,8 @@ module Movement
       return if velocity[:x].zero?
 
       entity[:movement][:x] += velocity[:x]
+      return if entity[:state] == :flying
+
       entity[:velocity][:x] = [(velocity[:x].abs - GRAVITY), 0].max * velocity[:x].sign
     end
 

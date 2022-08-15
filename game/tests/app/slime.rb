@@ -131,6 +131,26 @@ def test_slime_should_not_be_affected_by_gravity_when_flying(args, assert)
   end
 end
 
+def test_slime_should_not_slow_down_while_flying(args, assert)
+  [
+    { target: { position: { x: 100, y: 0 } } },
+    { target: { position: { x: -100, y: 0 } } }
+  ].each do |test_case|
+    SlimeTests.test(args) do
+      Slime.fly_towards slime, test_case[:target]
+
+      x_velocity_before = slime[:velocity][:x]
+
+      5.times { update }
+
+      assert.equal! slime[:velocity][:x],
+                    x_velocity_before,
+                    "Expected #{slime_description} to have not slowed down " \
+                    "while flying but it did"
+    end
+  end
+end
+
 def test_slime_should_eventually_stop_flying(args, assert)
   [
     { target: { position: { x: 100, y: 0 } } },
