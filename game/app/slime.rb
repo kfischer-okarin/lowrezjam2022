@@ -47,7 +47,7 @@ module Slime
       hotmap = state.hotmap
       health = slime[:health]
       touched_fire_particle = Hotmap.first_overlapping_fire_particle(hotmap, slime[:collider])
-      if touched_fire_particle
+      if touched_fire_particle && health[:ticks_since_hurt] >= INVINCIBLE_TICKS_AFTER_DAMAGE
         health[:ticks_since_hurt] = 0
         x_sign = touched_fire_particle[:velocity][:x].sign
         slime[:velocity][:x] = x_sign * PLAYER_HURT_SPEED_X

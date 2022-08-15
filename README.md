@@ -7,7 +7,8 @@
 - [x] Falling state when falling
 - [x] Flamethrower
 - [x] Lose state
-- [ ] Slime invincibility
+- [x] Slime invincibility
+- [ ] Slime blink
 - [ ] Slime HP
 - [ ] Slime dies
 - [ ] Slime enemy
