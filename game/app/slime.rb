@@ -9,12 +9,21 @@ module Slime
         collider: {},
         state: :move,
         face_direction: :right,
-        health: { max: 15, current: 15, ticks_since_hurt: 1000 }
+        health: { max: 15, current: 15, ticks_since_hurt: 1000 },
+        attack: { preparing_ticks: 0 }
       }
     end
 
     def update!(slime, state)
-      handle_basic_movement(slime, state)
+      case slime[:state]
+      when :move
+        wander(slime)
+      when :prepare_attack
+        slime[:attack][:preparing_ticks] += 1
+        fly_towards(slime, state.player) if slime[:attack][:preparing_ticks] >= 120
+      end
+
+      handle_movement(slime, state)
       handle_fire(slime, state)
     end
 
@@ -23,7 +32,7 @@ module Slime
       rendered_state[:sprite].merge! slime[:position]
       rendered_state[:sprite][:x] += x_offset
 
-      rendered_state[:next_animation] = :"move_#{slime[:face_direction]}"
+      rendered_state[:next_animation] = next_animation(slime)
       update_animation rendered_state
 
       metadata = Animations.current_frame_metadata rendered_state[:animation_state]
@@ -33,8 +42,18 @@ module Slime
 
     private
 
-    def handle_basic_movement(slime, state)
+    def wander(slime)
       slime[:movement][:x] += slime[:face_direction] == :right ? 0.1 : -0.1
+    end
+
+    def fly_towards(slime, entity)
+      slime[:state] = :flying
+      dx = entity[:position][:x] - slime[:position][:x]
+      slime[:velocity][:x] = dx.sign * 3
+      # slime[:face_direction] = dx > 0 ? :right : :left
+    end
+
+    def handle_movement(slime, state)
       movement_result = Movement.apply!(slime, state.colliders)
       if movement_result[:collisions][:left]
         slime[:face_direction] = :right
@@ -52,8 +71,19 @@ module Slime
         x_sign = touched_fire_particle[:velocity][:x].sign
         slime[:velocity][:x] = x_sign * PLAYER_HURT_SPEED_X
         health[:current] -= 1
+        slime[:state] = :prepare_attack
+        slime[:attack] = { preparing_ticks: 0 }
       else
         health[:ticks_since_hurt] += 1
+      end
+    end
+
+    def next_animation(slime)
+      case slime[:state]
+      when :prepare_attack
+        :prepare_attack
+      else
+        :"#{slime[:state]}_#{slime[:face_direction]}"
       end
     end
   end

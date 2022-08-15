@@ -10,10 +10,9 @@
 - [x] Slime invincibility
 - [x] Slime blink
 - [x] Slime HP
-- [ ] Slime dies - Win
-- [ ] Flamethrower damage
-- [ ] Slime damage
-- [ ] Win/Lose state
+- [x] Slime dies - Win
+- [x] Slime attack telegraph
+- [ ] Fly toward player
 - [ ] Fire particles wall collision
 - [ ] Improve camera y movement
 - [ ] Adjust fire position

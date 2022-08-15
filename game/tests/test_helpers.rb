@@ -23,6 +23,12 @@ module TestHelpers
       def next_tick
         @args.tick_count += 1
       end
+
+      def assign_attributes(entity, attributes)
+        attributes.each do |attribute, value|
+          entity[attribute] = value.dup
+        end
+      end
     end
 
     module Colliders
@@ -55,9 +61,7 @@ module TestHelpers
 
     def with(initial_attributes)
       @initial_attributes = initial_attributes
-      @initial_attributes.each do |attribute, value|
-        player[attribute] = value.dup
-      end
+      assign_attributes @player, initial_attributes
     end
 
     def input(actions)
@@ -201,10 +205,14 @@ module TestHelpers
 
     def with(initial_attributes)
       @initial_attributes = initial_attributes
-      @initial_attributes.each do |attribute, value|
-        slime[attribute] = value.dup
-      end
+      assign_attributes @slime, initial_attributes
       Movement.update_collider @slime
+    end
+
+    def player_with(attributes)
+      player = Player.build
+      assign_attributes player, attributes
+      @args.state.player = player
     end
 
     def update

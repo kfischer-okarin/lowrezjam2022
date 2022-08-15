@@ -47,6 +47,49 @@ def test_slime_should_lose_hp_when_being_hurt(args, assert)
   end
 end
 
+def test_slime_should_prepare_attack_when_hurt(args, assert)
+  SlimeTests.test(args) do
+    with position: { x: 0, y: 0 }
+
+    fire_particle position: { x: 7, y: 2 }
+
+    update
+
+    assert.equal! slime[:state],
+                  :prepare_attack,
+                  "Expected #{slime_description} to have state :prepare_attack " \
+                  "but it had #{slime[:state]}"
+  end
+end
+
+def test_slime_should_fly_left_towards_player_after_preparing_to_attack(args, assert)
+  [
+    { x: -15, y: 0 },
+    { x: 15, y: 0 }
+  ].each do |player_position|
+    SlimeTests.test(args) do
+      with state: :prepare_attack, position: { x: 0, y: 0 }
+
+      player_with position: player_position
+
+      safe_loop "Expected #{slime_description} to start flying but it wasn't" do
+        update
+
+        break if slime[:state] == :flying
+      end
+
+      distance_before = (player_position[:x] - slime[:position][:x]).abs
+
+      5.times { update }
+
+      assert.true! (player_position[:x] - slime[:position][:x]).abs < distance_before,
+                    "Expected #{slime_description} to fly towards the player " \
+                    "at #{player_position} but it didn't. Its position was " \
+                    "#{slime[:position]}"
+    end
+  end
+end
+
 def test_slime_should_not_be_hurt_when_close_to_a_smoke_particle(args, assert)
   SlimeTests.test(args) do
     with position: { x: 0, y: 0 }
