@@ -71,9 +71,11 @@ module Camera
       end
 
       dx = target_position[:x] - camera[:position][:x]
-      camera[:position][:y] = target_position[:y]
+      dy = target_position[:y] - camera[:position][:y]
       camera[:movement][:x] += smooth_movement_by dx
       Movement.move(camera, :x)
+      camera[:movement][:y] += smooth_movement_by dy
+      Movement.move(camera, :y)
     end
 
     def smooth_movement_by(offset)

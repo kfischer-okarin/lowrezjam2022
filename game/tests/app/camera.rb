@@ -11,14 +11,14 @@ def test_camera_apply(args, assert)
   end
 end
 
-def test_camera_should_follow_y_position_exactly(args, assert)
+def test_camera_should_follow_y_position(args, assert)
   CameraTests.test(args) do
     camera_y_before = camera[:position][:y]
 
     player[:position][:y] += 10
     update_camera
 
-    assert.equal! camera[:position][:y], camera_y_before + 10
+    assert.true! camera[:position][:y] > camera_y_before
   end
 end
 
