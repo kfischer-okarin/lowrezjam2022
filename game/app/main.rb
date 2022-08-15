@@ -434,7 +434,13 @@ def game_update(state)
   player = state.player
   Player.update!(player, state)
   handle_firethrower(state)
-  Camera.follow_player! state.camera, player
+
+  slime = state.slime
+  if (slime[:position][:x] - player[:position][:x]).abs <= SCREEN_W + 10
+    Camera.put_all_in_frame! state.camera, [player, state.slime]
+  else
+    Camera.follow_player! state.camera, player
+  end
   Slime.update! state.slime, state
   handle_game_end(state)
 end

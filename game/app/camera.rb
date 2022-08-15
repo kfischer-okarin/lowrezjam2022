@@ -14,8 +14,15 @@ module Camera
       sprite[:y] -= camera[:position][:y] + camera[:shake][:y]
     end
 
+    def put_all_in_frame!(camera, entities, immediately: false)
+      camera[:target_position] = calc_center_position(entities)
+      clamp_position! camera[:target_position]
+      move_to_target_position!(camera, immediately: immediately)
+    end
+
     def follow_player!(camera, player, immediately: false)
       camera[:target_position] = calc_target_position(player)
+      clamp_position! camera[:target_position]
       move_to_target_position!(camera, immediately: immediately)
     end
 
@@ -36,12 +43,24 @@ module Camera
 
     private
 
+    def calc_center_position(entities)
+      {
+        x: entities.map { |entity| entity[:position][:x] }.minmax.sum.idiv(entities.size) - SCREEN_W.idiv(2),
+        y: entities.map { |entity| entity[:position][:y] }.minmax.sum.idiv(entities.size) - SCREEN_H.idiv(2)
+      }
+    end
+
     def calc_target_position(player)
       x_offset = CAMERA_FOLLOW_X_OFFSET[player[:face_direction]]
       {
-        x: (player[:position][:x] + x_offset).clamp(CAMERA_MIN_X, CAMERA_MAX_X),
-        y: (player[:position][:y] + CAMERA_FOLLOW_Y_OFFSET).clamp(CAMERA_MIN_Y, CAMERA_MAX_Y)
+        x: (player[:position][:x] + x_offset),
+        y: (player[:position][:y] + CAMERA_FOLLOW_Y_OFFSET)
       }
+    end
+
+    def clamp_position!(position)
+      position[:x] = position[:x].clamp(CAMERA_MIN_X, CAMERA_MAX_X)
+      position[:y] = position[:y].clamp(CAMERA_MIN_Y, CAMERA_MAX_Y)
     end
 
     def move_to_target_position!(camera, immediately:)
