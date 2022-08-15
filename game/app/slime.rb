@@ -46,10 +46,10 @@ module Slime
     def handle_fire(slime, state)
       hotmap = state.hotmap
       health = slime[:health]
-      if Hotmap.rect_inside?(hotmap, slime[:collider])
+      touched_fire_particle = Hotmap.first_overlapping_fire_particle(hotmap, slime[:collider])
+      if touched_fire_particle
         health[:ticks_since_hurt] = 0
-        moving_fire_particle = state.fire_particles.find { |particle| particle[:velocity][:x].nonzero? }
-        x_sign = moving_fire_particle[:velocity][:x].sign
+        x_sign = touched_fire_particle[:velocity][:x].sign
         slime[:velocity][:x] = x_sign * PLAYER_HURT_SPEED_X
       else
         health[:ticks_since_hurt] += 1
