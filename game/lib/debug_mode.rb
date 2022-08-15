@@ -85,9 +85,14 @@ module DebugExtension
     end
 
     def take_screenshot
+      time = Time.now
+      formatted_time = format(
+        '%d-%02d-%02dT%02d-%02d-%02d',
+        time.year, time.month, time.day, time.hour, time.min, time.sec
+      )
       @args.outputs.screenshots << {
         x: 288, y: 8, w: 704, h: 704, a: 255,
-        path: "screenshot-#{Time.now}.png"
+        path: "screenshot-#{formatted_time}.png"
       }
     end
 
