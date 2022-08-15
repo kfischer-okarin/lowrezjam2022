@@ -61,8 +61,10 @@ module Slime
       movement_result = Movement.apply!(slime, state.colliders)
       if movement_result[:collisions][:left]
         slime[:face_direction] = :right
+        slime[:velocity][:x] *= -1
       elsif movement_result[:collisions][:right]
         slime[:face_direction] = :left
+        slime[:velocity][:x] *= -1
       end
 
       if movement_result[:floor_collider]
