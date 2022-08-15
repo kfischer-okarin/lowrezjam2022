@@ -1,6 +1,6 @@
 [project]
-name = "flamethrower_lowrez2022"
-title = "Unnamed Lowrez Flamethrower Game"
+name = "sludge_n_cinder"
+title = "Sludge n Cinder"
 version = "0.1.0"
 authors = ["Kevin Fischer"]
 icon = "metadata/icon.png"
