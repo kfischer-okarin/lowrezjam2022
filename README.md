@@ -9,10 +9,8 @@
 - [x] Lose state
 - [x] Slime invincibility
 - [x] Slime blink
-- [ ] Slime HP
-- [ ] Slime dies
-- [ ] Slime enemy
-- [ ] Win
+- [x] Slime HP
+- [ ] Slime dies - Win
 - [ ] Flamethrower damage
 - [ ] Slime damage
 - [ ] Win/Lose state

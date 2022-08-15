@@ -51,6 +51,7 @@ module Slime
         health[:ticks_since_hurt] = 0
         x_sign = touched_fire_particle[:velocity][:x].sign
         slime[:velocity][:x] = x_sign * PLAYER_HURT_SPEED_X
+        health[:current] -= 1
       else
         health[:ticks_since_hurt] += 1
       end

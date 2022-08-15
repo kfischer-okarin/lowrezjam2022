@@ -15,7 +15,7 @@ def test_slime_should_be_hurt_when_close_to_a_fire_particle(args, assert)
   end
 end
 
-def test_smoke_should_not_be_hurt_right_after_being_hurt(args, assert)
+def test_slime_should_not_be_hurt_right_after_being_hurt(args, assert)
   SlimeTests.test(args) do
     with position: { x: 0, y: 0 }
 
@@ -27,6 +27,23 @@ def test_smoke_should_not_be_hurt_right_after_being_hurt(args, assert)
     assert.true! slime[:health][:ticks_since_hurt] > 0,
                   "Expected #{slime_description} not be hurt twice in a row " \
                   'but it was'
+  end
+end
+
+def test_slime_should_lose_hp_when_being_hurt(args, assert)
+  SlimeTests.test(args) do
+    with position: { x: 0, y: 0 }
+
+    fire_particle position: { x: 7, y: 2 }
+
+    hp_before = slime[:health][:current]
+
+    update
+
+    assert.equal! slime[:health][:current],
+                  hp_before - 1,
+                  "Expected #{slime_description} to have lost hp " \
+                  "but it didn't"
   end
 end
 
