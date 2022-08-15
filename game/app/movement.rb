@@ -5,9 +5,11 @@ module Movement
       apply_gravity(entity) unless entity[:state] == :flying
       x_movement = move_with_collision(entity, :x, colliders: colliders)
       y_movement = move_with_collision(entity, :y, colliders: colliders)
+      floor_collider = find_floor_collider(entity, y_movement, colliders)
 
       {
         collisions: x_movement[:collisions].merge(y_movement[:collisions]),
+        floor_collider: floor_collider,
         position_change: {
           x: x_movement[:change],
           y: y_movement[:change]
@@ -93,6 +95,14 @@ module Movement
       {
         collisions: collisions,
         change: change
+      }
+    end
+
+    def find_floor_collider(entity, y_movement, colliders)
+      return y_movement[:collisions][:down] if y_movement[:collisions][:down]
+
+      colliders.find { |collider|
+        collider[:collider].top == entity[:position][:y]
       }
     end
 

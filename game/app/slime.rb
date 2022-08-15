@@ -21,6 +21,9 @@ module Slime
       when :prepare_attack
         slime[:attack][:preparing_ticks] += 1
         fly_towards(slime, state.player) if slime[:attack][:preparing_ticks] >= 120
+      when :flying
+        slime[:attack][:flying_ticks] += 1
+        slime[:state] = :move if slime[:attack][:flying_ticks] >= 120
       end
 
       handle_movement(slime, state)
@@ -40,17 +43,18 @@ module Slime
       slime[:collider_bounds] = collider_bounds.merge(x: collider_bounds[:x] + x_offset)
     end
 
-    private
-
-    def wander(slime)
-      slime[:movement][:x] += slime[:face_direction] == :right ? 0.1 : -0.1
-    end
-
     def fly_towards(slime, entity)
       slime[:state] = :flying
       dx = entity[:position][:x] - slime[:position][:x]
       slime[:face_direction] = dx > 0 ? :right : :left
       slime[:velocity][:x] = dx.sign * 3
+      slime[:attack] = { flying_ticks: 0 }
+    end
+
+    private
+
+    def wander(slime)
+      slime[:movement][:x] += slime[:face_direction] == :right ? 0.1 : -0.1
     end
 
     def handle_movement(slime, state)
@@ -59,6 +63,11 @@ module Slime
         slime[:face_direction] = :right
       elsif movement_result[:collisions][:right]
         slime[:face_direction] = :left
+      end
+
+      if movement_result[:floor_collider]
+        slime[:velocity][:y] = 0 if slime[:velocity][:y] < 0
+        slime[:movement][:y] = 0 if slime[:movement][:y] < 0
       end
     end
 

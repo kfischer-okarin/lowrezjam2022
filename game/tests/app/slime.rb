@@ -15,6 +15,21 @@ def test_slime_should_be_hurt_when_close_to_a_fire_particle(args, assert)
   end
 end
 
+def test_slime_should_have_no_y_velocity_while_on_the_floor(args, assert)
+  SlimeTests.test(args) do
+    with state: :move, velocity: { x: 0, y: 0 }
+
+    10.times do
+      update
+
+      assert.equal! slime[:velocity][:y],
+                    0,
+                    "Expected #{slime_description} to have no y velocity while on the floor " \
+                    "but it had #{slime[:velocity][:y]}"
+    end
+  end
+end
+
 def test_slime_should_not_be_hurt_right_after_being_hurt(args, assert)
   SlimeTests.test(args) do
     with position: { x: 0, y: 0 }
@@ -98,11 +113,13 @@ end
 
 def test_slime_should_not_be_affected_by_gravity_when_flying(args, assert)
   [
-    { velocity: { x: 3, y: 0 } },
-    { velocity: { x: -3, y: 0 } }
+    { target: { position: { x: 100, y: 0 } } },
+    { target: { position: { x: -100, y: 0 } } }
   ].each do |test_case|
     SlimeTests.test(args) do
-      with state: :flying, position: { x: 0, y: 15 }, velocity: test_case[:velocity]
+      with position: { x: 0, y: 15 }
+
+      Slime.fly_towards slime, test_case[:target]
 
       5.times { update }
 
@@ -110,6 +127,51 @@ def test_slime_should_not_be_affected_by_gravity_when_flying(args, assert)
                     15,
                     "Expected #{slime_description} to have not been affected by gravity " \
                     "but its position was #{slime[:position]}"
+    end
+  end
+end
+
+def test_slime_should_eventually_stop_flying(args, assert)
+  [
+    { target: { position: { x: 100, y: 0 } } },
+    { target: { position: { x: -100, y: 0 } } }
+  ].each do |test_case|
+    SlimeTests.test(args) do
+      Slime.fly_towards slime, test_case[:target]
+
+      safe_loop "Expected #{slime_description} to stop flying but never did" do
+        update
+
+        break if slime[:state] != :flying
+      end
+
+      assert.ok!
+    end
+  end
+end
+
+def test_slime_should_not_sink_when_stopping_flying(args, assert)
+  [
+    { target: { position: { x: 100, y: 0 } } },
+    { target: { position: { x: -100, y: 0 } } }
+  ].each do |test_case|
+    SlimeTests.test(args) do
+      Slime.fly_towards slime, test_case[:target]
+
+      y_before = slime[:position][:y]
+
+      safe_loop "Expected #{slime_description} to stop flying but never did" do
+        update
+
+        break if slime[:state] != :flying
+      end
+
+      5.times { update }
+
+      assert.equal! slime[:position][:y],
+                    y_before,
+                    "Expected #{slime_description} to not sink when stopping flying " \
+                    "but it did. Its position was #{slime[:position]}"
     end
   end
 end
