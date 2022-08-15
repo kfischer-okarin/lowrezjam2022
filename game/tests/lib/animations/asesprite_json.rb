@@ -110,3 +110,45 @@ def test_animations_asesprite_json_flipped_horizontally_slices(_args, assert)
                 },
                 "Slices weren't flipped back"
 end
+
+def test_animations_asesprite_json_pingpong(_args, assert)
+  animations = Animations::AsespriteJson.read 'tests/resources/character_pingpong.json'
+  expected_animations = {
+    anim: Animations.build(
+      w: 48, h: 48, tile_w: 48, tile_h: 48, path: 'tests/resources/character.png',
+      flip_horizontally: false,
+      frames: [
+        {
+          tile_x: 0, tile_y: 0,
+          duration: 3,
+          metadata: {
+            slices: {}
+          }
+        },
+        {
+          tile_x: 48, tile_y: 0,
+          duration: 3,
+          metadata: {
+            slices: {}
+          }
+        },
+        {
+          tile_x: 96, tile_y: 0,
+          duration: 3,
+          metadata: {
+            slices: {}
+          }
+        },
+        {
+          tile_x: 48, tile_y: 0,
+          duration: 3,
+          metadata: {
+            slices: {}
+          }
+        }
+      ]
+    ),
+  }
+
+  assert.equal! animations, expected_animations
+end

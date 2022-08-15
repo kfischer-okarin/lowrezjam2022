@@ -14,19 +14,21 @@ module Animations
           sprite_sheet_data.fetch(:meta).fetch(:frameTags).each do |frame_tag_data|
             tag = frame_tag_data.fetch(:name).to_sym
             frame_range = frame_tag_data.fetch(:from)..frame_tag_data.fetch(:to)
-            result[tag.to_sym] = Animations.build(
-              frames: frame_range.map { |frame_index|
-                frame_data = frames[frame_index]
-                frame = frame_data.fetch(:frame)
-                {
-                  tile_x: frame[:x],
-                  tile_y: frame[:y],
-                  duration: frame_data.fetch(:duration).idiv(50) * 3, # 50ms = 3 ticks
-                  metadata: {
-                    slices: slice_bounds_for_frame(slices_data, frame_index, frame_size)
-                  }
+            tag_frames = frame_range.map { |frame_index|
+              frame_data = frames[frame_index]
+              frame = frame_data.fetch(:frame)
+              {
+                tile_x: frame[:x],
+                tile_y: frame[:y],
+                duration: frame_data.fetch(:duration).idiv(50) * 3, # 50ms = 3 ticks
+                metadata: {
+                  slices: slice_bounds_for_frame(slices_data, frame_index, frame_size)
                 }
-              },
+              }
+            }
+            apply_animation_direction! tag_frames, frame_tag_data.fetch(:direction)
+            result[tag.to_sym] = Animations.build(
+              frames: tag_frames,
               **base
             )
           end
@@ -70,6 +72,15 @@ module Animations
             slices[name] = slice_bounds
           end
         }
+      end
+
+      def apply_animation_direction!(frames, direction)
+        case direction
+        when 'pingpong'
+          (frames.size - 2).downto(1) do |index|
+            frames << frames[index]
+          end
+        end
       end
 
       def flip_slices(frame, frame_width:)
