@@ -75,6 +75,22 @@ def game_tick(args)
   end
 end
 
+def win_tick(args)
+  state = args.state
+  if any_key?(args.inputs)
+    change_to_scene state, :game
+  end
+
+  render_lowrez(args.outputs) do |screen|
+    ['You win!', 'Press any', 'key to play', 'again...'].each_with_index do |text, index|
+      screen.primitives << {
+        x: 32, y: 48 - 12 * index, text: text, alignment_enum: 1, vertical_alignment_enum: 1, size_enum: -6,
+        font: 'resources/vector.ttf', r: 255, g: 255, b: 255
+      }.label!
+    end
+  end
+end
+
 def lose_tick(args)
   state = args.state
   if any_key?(args.inputs)
@@ -450,6 +466,8 @@ end
 def handle_game_end(state)
   if state.player[:health][:current] <= 0
     change_to_scene state, :lose
+  elsif state.slime[:health][:current] <= 0
+    change_to_scene state, :win
   end
 end
 
